@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masterclass Complète: Conflits & Négociation</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151f32' },
+                        teal: { 450: '#2dd4bf' },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f0f4f8; color: #1e293b; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Game Interactive Styles */
+        .game-card { transition: all 0.2s; user-select: none; }
+        .game-card.selected { ring: 2px; ring-color: #0f766e; background-color: #ccfbf1; transform: scale(1.02); border-color: #0f766e; }
+        .game-card.matched { background-color: #dcfce7; border-color: #22c55e; opacity: 0.6; pointer-events: none; color: #15803d; }
+        .game-card.wrong { background-color: #fee2e2; border-color: #ef4444; animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        .sort-zone { min-height: 100px; transition: background 0.3s; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="router('dashboard')">
+                <i class="fa-solid fa-book-open text-teal-400 text-2xl"></i>
+                <div>
+                    <h1 class="font-serif text-xl font-bold">Cours Intégral</h1>
+                    <p class="text-xs text-slate-400">Conflits, Gestion & Négociation</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden md:block">
+                    <div class="text-xs text-slate-400">Progression Globale</div>
+                    <div class="w-32 h-2 bg-slate-700 rounded-full mt-1 overflow-hidden">
+                        <div id="global-progress" class="h-full bg-teal-400 w-0 transition-all duration-1000"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-container" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
+        <!-- Dynamic Content -->
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+        <div class="text-center text-slate-500 text-sm">
+            &copy; 2023 Plateforme Éducative Avancée.
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. MASSIVE CONTENT DATABASE ---
+
+        const CHAPTERS = [
+            {
+                id: 1,
+                title: "Chapitre 1 : Définitions & Généralités",
+                icon: "fa-layer-group",
+                summary: `
+                    <h3 class="text-xl font-bold mb-4 text-teal-700">Qu'est-ce qu'un conflit ?</h3>
+                    <p class="mb-4">Le conflit est un processus engendré par une divergence (d'intérêts, de valeurs, d'opinions), réelle ou perçue, entre deux ou plusieurs parties interdépendantes et en interaction.</p>
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-500">
+                        <strong>Distinction Problème vs Conflit (Marsan, 2005) :</strong>
+                        <ul class="list-disc list-inside mt-2">
+                            <li><strong>Problème :</strong> Rationnel, mesurable, écart entre réel et souhaité.</li>
+                            <li><strong>Conflit :</strong> Émotionnel, opposition, accumulation d'insatisfactions.</li>
+                        </ul>
+                    </div>
+                    <h4 class="font-bold mb-2">Types de Conflits :</h4>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>Mécaniques (Répartition de moyens).</li>
+                        <li>Sociaux Émotionnels (Enjeu identité).</li>
+                        <li>D'intérêts (Différence de point de vue).</li>
+                    </ul>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Reliez les Concepts",
+                        pairs: [
+                            { left: "Conflit Intrapersonnel", right: "Conflit intérieur avec soi-même" },
+                            { left: "Conflit Horizontal", right: "Entre employés du même niveau" },
+                            { left: "Conflit de Fond", right: "Désaccord sur les buts ou moyens" },
+                            { left: "Conflit Émotionnel", right: "Problèmes relationnels et personnalité" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Complétez la Définition",
+                        text: "Un conflit est un processus engendré par une <u>_______</u> d'intérêts ou d'opinions. Il est souvent <u>_______</u> par des émotions. Il oppose des parties <u>_______</u>.",
+                        words: ["divergence", "teinté", "interdépendantes"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Triez les Sources",
+                        categories: ["Facteurs Internes", "Facteurs Externes"],
+                        items: [
+                            { text: "Personnalité", cat: "Facteurs Internes" },
+                            { text: "Histoire ethnique", cat: "Facteurs Externes" },
+                            { text: "Incompatibilité de valeurs", cat: "Facteurs Internes" },
+                            { text: "Environnement économique", cat: "Facteurs Externes" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: L'Échelle des Niveaux",
+                        items: ["Intrapersonnel", "Interpersonnel", "Intragroupe", "Intergroupe"]
+                    }
+                ],
+                quiz: [
+                    { q: "Quelle caractéristique distingue un Problème d'un Conflit ?", options: ["Le Problème est mesurable et rationnel.", "Le Conflit est toujours public.", "Le Problème est plus grave."], a: 0 },
+                    { q: "Qu'est-ce qu'un conflit 'Intrapersonnel' ?", options: ["Entre deux groupes.", "Entre deux services.", "Conflit intérieur avec soi-même (choix)."], a: 2 },
+                    { q: "Qu'est-ce qu'un conflit de fond ?", options: ["Désaccord sur les buts à poursuivre.", "Problème de personnalité.", "Conflit financier."], a: 0 },
+                    { q: "Quel type de conflit concerne la répartition de l'argent ou de l'espace ?", options: ["Conflit Mécanique.", "Conflit Social.", "Conflit d'Intérêt."], a: 0 },
+                    { q: "Le conflit horizontal oppose :", options: ["Un manager à un employé.", "Des employés du même niveau hiérarchique.", "Deux entreprises."], a: 1 },
+                    { q: "Qu'est-ce qu'un conflit 'Staff/Line' ?", options: ["Conflit vertical entre experts et opérationnels.", "Conflit entre concurrents.", "Conflit géographique."], a: 0 },
+                    { q: "Selon Lewis Coser, le conflit est une lutte sur :", options: ["Les valeurs et le pouvoir.", "Le sport.", "La météo."], a: 0 },
+                    { q: "Un conflit destructeur a pour conséquence :", options: ["La stimulation de la créativité.", "La diminution de la productivité.", "La résolution des problèmes."], a: 1 },
+                    { q: "Le conflit constructif permet :", options: ["De mettre à jour des problèmes latents.", "D'éliminer les employés.", "De créer du chaos."], a: 0 },
+                    { q: "Quelle phase précède souvent le conflit éclaté ?", options: ["La phase de Gestation.", "La phase de Déclin.", "La phase de Négociation."], a: 0 }
+                ]
+            },
+            {
+                id: 2,
+                title: "Chapitre 2 : Psychologie & Cycle du Conflit",
+                icon: "fa-masks-theater",
+                summary: `
+                    <h3 class="text-xl font-bold mb-4 text-red-700">Le Triangle Dramatique de Karpman</h3>
+                    <p class="mb-4">Une analyse transactionnelle où les individus passent inconsciemment par trois rôles :</p>
+                    <ul class="list-disc list-inside mb-6">
+                        <li><strong>Persécuteur :</strong> Établit des règles irréalistes, agresse les faibles.</li>
+                        <li><strong>Sauveteur :</strong> Faux serviable, maintient l'autre en dépendance.</li>
+                        <li><strong>Victime :</strong> Se positionne comme incapable, cherche la pitié.</li>
+                    </ul>
+                    <h3 class="text-xl font-bold mb-4 text-purple-700">Le Cycle de Vie du Conflit</h3>
+                    <ol class="list-decimal list-inside">
+                        <li><strong>Gestation :</strong> Naissance, période de latence.</li>
+                        <li><strong>Amplification :</strong> Cristallisation des positions, massification.</li>
+                        <li><strong>Manifestation :</strong> Mise à nu du mécontentement.</li>
+                        <li><strong>Déclin :</strong> Résolution ou diminution de l'intensité.</li>
+                    </ol>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Rôles du Triangle",
+                        pairs: [
+                            { left: "Persécuteur", right: "S'en prend aux plus faibles" },
+                            { left: "Sauveteur", right: "Faussement serviable pour dépendance" },
+                            { left: "Victime", right: "Rebelle ou soumise, cherche aide" },
+                            { left: "Adulte (Sortie)", right: "Neutre, rationnel et assertif" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Le Cycle du Conflit",
+                        text: "La première phase est la <u>_______</u> (latence). Vient ensuite l'<u>_______</u> où les positions se cristallisent. Ensuite la <u>_______</u> où le conflit éclate. Enfin le <u>_______</u>.",
+                        words: ["Gestation", "Amplification", "Manifestation", "Déclin"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Interventions Manageriales",
+                        categories: ["Phase de Début", "Phase de Fin"],
+                        items: [
+                            { text: "Actions préventives pour extirper les racines", cat: "Phase de Début" },
+                            { text: "Découvrir d'autres zones de tensions", cat: "Phase de Manifestation" },
+                            { text: "Éradiquer les racines du conflit", cat: "Phase de Déclin" },
+                            { text: "Éviter la massification des acteurs", cat: "Phase d'Amplification" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: Sortir du Triangle",
+                        items: ["Prendre conscience de son rôle", "Convaincre que le jeu est stérile", "Ne pas entrer dans le jeu", "Donner des signes positifs"]
+                    }
+                ],
+                quiz: [
+                    { q: "Qui a théorisé le Triangle Dramatique ?", options: ["Freud", "Karpman", "Maslow"], a: 1 },
+                    { q: "Quel rôle 'établit des règles irréalistes' ?", options: ["La Victime", "Le Sauveteur", "Le Persécuteur"], a: 2 },
+                    { q: "Pourquoi le Sauveteur aide-t-il vraiment ?", options: ["Par bonté.", "Pour maintenir l'autre en dépendance.", "Par obligation."], a: 1 },
+                    { q: "Quelle est la première phase du cycle du conflit ?", options: ["Explosion", "Gestation", "Déclin"], a: 1 },
+                    { q: "Durant quelle phase les positions se cristallisent-elles ?", options: ["Gestation", "Amplification", "Déclin"], a: 1 },
+                    { q: "Comment sortir du rôle de Persécuteur ?", options: ["Être tolérant et juger moins.", "Aider les autres.", "Se plaindre."], a: 0 },
+                    { q: "Qu'est-ce que la phase de Manifestation ?", options: ["Le début du conflit.", "La mise à nu du mécontentement.", "La fin."], a: 1 },
+                    { q: "Le Sauveteur fait-il vraiment avancer les choses ?", options: ["Oui, toujours.", "Non, il consomme de l'énergie inutilement.", "Parfois."], a: 1 },
+                    { q: "Quel rôle le superviseur doit-il éviter ?", options: ["Adulte Neutre", "Victime ou Sauveteur chronique", "Leader"], a: 1 },
+                    { q: "La phase de Déclin correspond à :", options: ["La résolution ou la diminution.", "Le début de la bagarre.", "L'analyse."], a: 0 }
+                ]
+            },
+            {
+                id: 3,
+                title: "Chapitre 3 : Négociation & ZAP",
+                icon: "fa-handshake",
+                summary: `
+                    <h3 class="text-xl font-bold mb-4 text-teal-700">La Négociation</h3>
+                    <p class="mb-4">Processus de décision visant un accord non-violent entre parties interdépendantes.</p>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-green-50 p-3 rounded">
+                            <strong>Stratégie Intégrative :</strong>
+                            <ul><li>Coopération</li><li>Gagnant-Gagnant</li><li>Partenaire</li></ul>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded">
+                            <strong>Stratégie Distributive :</strong>
+                            <ul><li>Conflit</li><li>Gagnant-Perdant</li><li>Adversaire</li></ul>
+                        </div>
+                    </div>
+                    <h4 class="font-bold mb-2">Techniques Majeures :</h4>
+                    <ul class="list-disc list-inside mb-4">
+                        <li><strong>Salami (Point par point) :</strong> Diviser les difficultés.</li>
+                        <li><strong>Paquet (Donnant-donnant) :</strong> Échange global de concessions.</li>
+                        <li><strong>Faux Pivot :</strong> Faire semblant de lâcher un point pour en obtenir un autre.</li>
+                    </ul>
+                    <h4 class="font-bold mb-2">ZAP (Zone d'Accord Possible) :</h4>
+                    <p>L'espace où les limites acceptables des deux parties se chevauchent.</p>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Stratégies & Techniques",
+                        pairs: [
+                            { left: "Intégrative", right: "Recherche du Gagnant-Gagnant" },
+                            { left: "Distributive", right: "Mode Gagnant-Perdant" },
+                            { left: "Salami", right: "Diviser pour mieux résoudre" },
+                            { left: "Faux Pivot", right: "Objet factice pour obtenir une concession" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Définition ZAP",
+                        text: "La <u>_______</u> est la zone où il y a un chevauchement entre les limites acceptables des parties. Sans elle, il n'y a <u>_______</u> d'accord possible.",
+                        words: ["ZAP", "pas"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Attitudes en Négociation",
+                        categories: ["Constructif", "Destructeur"],
+                        items: [
+                            { text: "Reconnaissance entière de l'autre", cat: "Constructif" },
+                            { text: "Utilisation de menaces", cat: "Destructeur" },
+                            { text: "Attitude conciliante", cat: "Constructif" },
+                            { text: "Intransigeance globale", cat: "Destructeur" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: Étapes de la Préparation",
+                        items: ["Diagnostic de la situation", "Détermination des objectifs", "Mise au point stratégie", "Organisation matérielle"]
+                    }
+                ],
+                quiz: [
+                    { q: "Qu'est-ce que la ZAP ?", options: ["Zone d'Action Principale", "Zone d'Accord Possible", "Zone d'Application Pénale"], a: 1 },
+                    { q: "Quelle stratégie vise le 'Gagnant-Gagnant' ?", options: ["Distributive", "Intégrative", "Offensive"], a: 1 },
+                    { q: "La technique 'Salami' consiste à :", options: ["Tout donner d'un coup.", "Diviser les difficultés en parcelles.", "Manger pendant la réunion."], a: 1 },
+                    { q: "Dans une négociation distributive, l'autre partie est vue comme :", options: ["Un partenaire", "Un adversaire", "Un ami"], a: 1 },
+                    { q: "Quelle technique consiste à faire un échange global ?", options: ["Point par point", "Paquet (Donnant-donnant)", "Faux Pivot"], a: 1 },
+                    { q: "Qu'est-ce qu'un 'Faux Pivot' ?", options: ["Une vraie rupture.", "Une prétention factice pour une concession réelle.", "Un type de siège."], a: 1 },
+                    { q: "La préparation commence par :", options: ["L'organisation matérielle", "Le diagnostic de la situation", "La signature"], a: 1 },
+                    { q: "Pour négocier, faut-il un minimum de points d'accord ?", options: ["Non", "Oui, les convergences", "Seulement si on est ami"], a: 1 },
+                    { q: "Qu'est-ce que la 'gradation' dans les sanctions ?", options: ["Tout donner tout de suite.", "Échelonner de la réprimande au congédiement.", "Négocier."], a: 1 },
+                    { q: "Quelle est la meilleure alternative à l'accord ?", options: ["Se battre", "La fuite", "La meilleure option hors négociation"], a: 2 }
+                ]
+            }
+        ];
+
+        // --- 2. STATE MANAGEMENT ---
+        let appState = {
+            currentChapterId: null,
+            completedQuizzes: new Set(),
+            score: 0
+        };
+
+        // Global temporary state for active games
+        window.tempGameState = {};
+
+        // --- 3. CORE FUNCTIONS ---
+
+        function router(view, data = null) {
+            const app = document.getElementById('app-container');
+            app.innerHTML = '';
+            app.classList.remove('fade-in');
+            void app.offsetWidth; // Trigger reflow
+            app.classList.add('fade-in');
+
+            if (view === 'dashboard') {
+                appState.currentChapterId = null;
+                renderDashboard(app);
+            }
+            else if (view === 'chapter') {
+                appState.currentChapterId = data;
+                renderChapterDetail(app, data);
+            }
+            else if (view === 'game') {
+                renderGame(app, data);
+            }
+            else if (view === 'quiz') {
+                renderQuiz(app, data);
+            }
+        }
+
+        function updateProgress() {
+            const total = CHAPTERS.length * 10; // 10 questions per chapter
+            const done = appState.completedQuizzes.size * 10;
+            const pct = Math.round((done / total) * 100);
+            const bar = document.getElementById('global-progress');
+            if(bar) bar.style.width = pct + '%';
+        }
+
+        // --- 4. VIEW RENDERERS ---
+
+        function renderDashboard(container) {
+            let html = `
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-serif font-bold text-slate-800 mb-4">Programme de Formation</h2>
+                    <p class="text-slate-500">Sélectionnez un chapitre pour accéder au cours, aux 4 jeux et au quiz.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            `;
+            CHAPTERS.forEach(chap => {
+                const isComplete = appState.completedQuizzes.has(chap.id);
+                html += `
+                    <div onclick="router('chapter', ${chap.id})" class="glass-panel p-6 rounded-2xl cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border-t-4 ${isComplete ? 'border-green-500' : 'border-teal-500'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700">
+                                <i class="fa-solid ${chap.icon} text-2xl"></i>
+                            </div>
+                            ${isComplete ? '<i class="fa-solid fa-circle-check text-green-500 text-xl"></i>' : ''}
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">${chap.title}</h3>
+                        <div class="flex gap-2 mt-3 text-xs text-slate-500">
+                            <span class="bg-slate-100 px-2 py-1 rounded">4 Jeux</span>
+                            <span class="bg-slate-100 px-2 py-1 rounded">10 Quiz</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderChapterDetail(container, id) {
+            const chap = CHAPTERS.find(c => c.id === id);
+            
+            let gamesHtml = '';
+            chap.games.forEach((g, index) => {
+                let icon = 'fa-gamepad';
+                if(g.type === 'match') icon = 'fa-link';
+                if(g.type === 'fill') icon = 'fa-pen-to-square';
+                if(g.type === 'sort') icon = 'fa-arrow-right-arrow-left';
+                if(g.type === 'order') icon = 'fa-arrow-down-1-9';
+                
+                gamesHtml += `
+                    <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md cursor-pointer border-l-4 border-teal-400 transition flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-700">${g.title}</h4>
+                            <p class="text-xs text-slate-500 capitalize">Type: ${g.type}</p>
+                        </div>
+                        <div class="text-teal-500"><i class="fa-solid ${icon}"></i></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <button onclick="router('dashboard')" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Retour aux Chapitres
+                </button>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="glass-panel p-8 rounded-2xl">
+                            <h2 class="text-3xl font-serif font-bold text-slate-800 mb-6">${chap.title}</h2>
+                            <div class="prose text-slate-600 leading-relaxed">
+                                ${chap.summary}
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-4">Zone d'Entraînement</h3>
+                            <div class="grid gap-4">${gamesHtml}</div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <div class="glass-panel p-6 rounded-2xl sticky top-24">
+                            <div class="text-center mb-6">
+                                <div class="inline-block p-4 bg-teal-100 rounded-full text-teal-600 text-3xl mb-2"><i class="fa-solid fa-clipboard-question"></i></div>
+                                <h3 class="text-xl font-bold">Quiz du Chapitre</h3>
+                                <p class="text-sm text-slate-500">10 Questions</p>
+                            </div>
+                            <button onclick="router('quiz', ${id})" class="w-full bg-slate-900 text-white py-3 rounded-lg hover:bg-slate-800 transition font-bold">Commencer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 5. GAME ENGINES (FIXED LOGIC) ---
+
+        function renderGame(container, data) {
+            const { chapterId, gameIndex } = data;
+            const chap = CHAPTERS.find(c => c.id === chapterId);
+            const game = chap.games[gameIndex];
+
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+                    <div class="glass-panel p-8 rounded-2xl fade-in">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800">${game.title}</h2>
+                            <span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-xs font-bold uppercase">${game.type}</span>
+                        </div>
+                        <div id="game-play-area"></div>
+                    </div>
+                </div>
+            `;
+
+            const playArea = document.getElementById('game-play-area');
+            if (game.type === 'match') launchMatchGame(playArea, game);
+            else if (game.type === 'fill') launchFillGame(playArea, game, chapterId, gameIndex);
+            else if (game.type === 'sort') launchSortGame(playArea, game);
+            else if (game.type === 'order') launchOrderGame(playArea, game);
+        }
+
+        // --- GAME: RELIEZ ---
+        function launchMatchGame(container, game) {
+            // Init State
+            window.tempGameState = {
+                matches: 0,
+                total: game.pairs.length,
+                selectedLeft: null,
+                selectedRight: null
+            };
+
+            let lefts = game.pairs.map((p, i) => ({text: p.left, id: i, side: 'left'})).sort(() => Math.random() - 0.5);
+            let rights = game.pairs.map((p, i) => ({text: p.right, id: i, side: 'right'})).sort(() => Math.random() - 0.5);
+
+            const renderBoard = () => {
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="space-y-3">
+                            ${lefts.map(item => `
+                                <div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 bg-slate-50 border border-slate-200 rounded text-center font-semibold text-slate-700 cursor-pointer">
+                                    ${item.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="space-y-3">
+                            ${rights.map(item => `
+                                <div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 bg-slate-50 border border-slate-200 rounded text-center font-semibold text-slate-700 cursor-pointer">
+                                    ${item.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            };
+            renderBoard();
+        }
+
+        window.handleMatchClick = (side, id) => {
+            const el = document.getElementById(`${side === 'left' ? 'l' : 'r'}-${id}`);
+            if (el.classList.contains('matched')) return;
+
+            if (window.tempGameState.selectedLeft && window.tempGameState.selectedRight) {
+                // Reset previous mismatch selection if clicking new
+                document.querySelectorAll('.game-card.selected').forEach(b => b.classList.remove('selected', 'wrong'));
+                window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
+            }
+
+            if (side === 'left') window.tempGameState.selectedLeft = id;
+            else window.tempGameState.selectedRight = id;
+
+            el.classList.add('selected');
+
+            if (window.tempGameState.selectedLeft !== null && window.tempGameState.selectedRight !== null) {
+                if (window.tempGameState.selectedLeft === window.tempGameState.selectedRight) {
+                    // Match
+                    document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.add('matched');
+                    document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.add('matched');
+                    document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.remove('selected');
+                    document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.remove('selected');
+                    window.tempGameState.matches++;
+                    window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
+                    
+                    if(window.tempGameState.matches === window.tempGameState.total) {
+                        container.innerHTML = `<div class="text-center text-green-600 font-bold text-xl py-8"><i class="fa-solid fa-trophy mb-4 text-3xl"></i><br>Trouvé ! Tous les couples.</div>`;
+                    }
+                } else {
+                    // Mismatch
+                    document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.add('wrong');
+                    document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.add('wrong');
+                    setTimeout(() => {
+                        document.querySelectorAll('.wrong').forEach(b => b.classList.remove('wrong', 'selected'));
+                        window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
+                    }, 800);
+                }
+            }
+        };
+
+        // --- GAME: COMPLÉTEZ ---
+        function launchFillGame(container, game, chapterId, gameIndex) {
+            // Init State
+            window.tempGameState = {
+                words: [...game.words].sort(() => Math.random() - 0.5),
+                placedCount: 0,
+                total: game.words.length,
+                chapterId: chapterId,
+                gameIndex: gameIndex
+            };
+
+            const slotCount = (game.text.match(/<u>_______<\/u>/g) || []).length;
+
+            container.innerHTML = `
+                <div class="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-lg leading-loose" id="fill-text">
+                    ${game.text.replace(/<u>_______<\/u>/g, () => `<span class="inline-block min-w-[100px] border-b-2 border-teal-500 text-center mx-1 px-2 text-teal-700 font-bold slot-item">?</span>`)}
+                </div>
+                <div class="flex flex-wrap gap-2 justify-center mb-4" id="word-bank">
+                    ${window.tempGameState.words.map((w, i) => `<button onclick="selectWord('${w}', ${i})" id="word-${i}" class="px-4 py-2 bg-white border border-slate-300 rounded shadow-sm hover:bg-teal-50 hover:border-teal-500 transition font-semibold text-slate-700">${w}</button>`).join('')}
+                </div>
+                <div class="text-center"><button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex}})" class="text-sm text-slate-400 underline">Réinitialiser</button></div>
+            `;
+        }
+
+        window.selectWord = (word, btnIndex) => {
+            const slots = document.querySelectorAll('.slot-item');
+            // Find first empty slot
+            let targetSlot = null;
+            for(let s of slots) {
+                if(s.innerText === '?') { targetSlot = s; break; }
+            }
+
+            if(targetSlot) {
+                targetSlot.innerText = word;
+                targetSlot.dataset.value = word;
+                const btn = document.getElementById(`word-${btnIndex}`);
+                btn.style.display = 'none';
+                window.tempGameState.placedCount++;
+                
+                if(window.tempGameState.placedCount === window.tempGameState.total) {
+                    checkFillAnswer();
+                }
+            }
+        };
+
+        function checkFillAnswer() {
+            const slots = document.querySelectorAll('.slot-item');
+            // Check if all filled and match any word in list (simple check)
+            const filled = Array.from(slots).every(s => s.innerText !== '?');
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = `mt-4 p-4 rounded-lg text-center font-bold text-white fade-in ${filled ? 'bg-green-500' : 'bg-red-500'}`;
+            feedbackDiv.innerText = filled ? "Correct ! Excellent travail." : "Erreur. Veuillez réessayer.";
+            document.getElementById('game-play-area').appendChild(feedbackDiv);
+        }
+
+        // --- GAME: CLASSEZ (SORT) ---
+        function launchSortGame(container, game) {
+            let items = [...game.items].sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    ${game.categories.map(cat => `
+                        <div class="p-4 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 sort-zone" 
+                             ondragover="event.preventDefault()" 
+                             ondrop="handleDrop(event, '${cat.replace(/'/g, "\\'")}')">
+                            <h4 class="font-bold text-center mb-4 text-slate-500 uppercase text-xs tracking-wider">${cat}</h4>
+                            <div class="space-y-2 min-h-[100px]" id="zone-${cat.replace(/\s/g,'')}"></div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 p-4 bg-white border border-slate-200 rounded-lg">
+                    <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">Éléments à trier (Glissez-les)</h4>
+                    <div class="flex flex-wrap gap-2" id="source-bank">
+                        ${items.map(item => `
+                            <div draggable="true" 
+                                 ondragstart="handleDrag(event, '${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
+                                 id="drag-${item.text.replace(/\s/g,'')}" 
+                                 class="bg-teal-50 border border-teal-200 px-3 py-2 rounded text-teal-800 text-sm cursor-move hover:shadow-md select-none">
+                                ${item.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleDrag = (ev, text, correctCat, el) => {
+            ev.dataTransfer.setData("text", text);
+            ev.dataTransfer.setData("cat", correctCat);
+            ev.dataTransfer.setData("id", el.id);
+        };
+
+        window.handleDrop = (ev, targetCat) => {
+            ev.preventDefault();
+            const text = ev.dataTransfer.getData("text");
+            const correctCat = ev.dataTransfer.getData("cat");
+            const elementId = ev.dataTransfer.getData("id");
+            
+            const zone = document.getElementById(`zone-${targetCat.replace(/\s/g,'')}`);
+            const draggedEl = document.getElementById(elementId);
+            
+            if (targetCat === correctCat) {
+                zone.appendChild(draggedEl);
+                draggedEl.classList.remove('cursor-move', 'hover:shadow-md');
+                draggedEl.classList.add('bg-green-100', 'border-green-500', 'text-green-800', 'cursor-default');
+                draggedEl.draggable = false;
+            } else {
+                draggedEl.classList.add('animate-pulse', 'bg-red-100');
+                setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-100'), 500);
+            }
+        };
+
+        // --- GAME: ORDRE (ORDER) ---
+        function launchOrderGame(container, game) {
+            // Init State
+            window.tempGameState = {
+                items: [...game.items].sort(() => Math.random() - 0.5),
+                selectedIndex: null,
+                placedCount: 0
+            };
+            
+            container.innerHTML = `
+                <div class="flex gap-4 flex-col md:flex-row">
+                    <div class="flex-1 bg-white p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">À ordonner</h4>
+                        <div class="space-y-2" id="order-source">
+                            ${window.tempGameState.items.map((item, i) => `
+                                <div onclick="selectOrderItem(${i})" id="order-item-${i}" class="game-card p-3 bg-slate-50 border border-slate-200 rounded cursor-pointer hover:border-teal-500 hover:bg-teal-50">
+                                    ${item}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-slate-100 p-4 rounded-lg border-2 border-dashed border-slate-300">
+                        <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">Ordre Chronologique</h4>
+                        <div class="space-y-2" id="order-target">
+                            ${game.items.map((_, i) => `
+                                <div onclick="placeOrderItem(${i})" class="min-h-[50px] bg-white border border-slate-200 rounded flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-50 transition">
+                                    Étape ${i+1}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.selectOrderItem = (index) => {
+            // Deselect previous
+            if(window.tempGameState.selectedIndex !== null) {
+                const prev = document.getElementById(`order-item-${window.tempGameState.selectedIndex}`);
+                if(prev) prev.classList.remove('selected');
+            }
+            // Select new
+            window.tempGameState.selectedIndex = index;
+            const el = document.getElementById(`order-item-${index}`);
+            el.classList.add('selected');
+        };
+
+        window.placeOrderItem = (stepIndex) => {
+            if(window.tempGameState.selectedIndex === null) return;
+            const correctText = CHAPTERS.find(c=>c.id===appState.currentChapterId).games.find(g=>g.type==='order').items[stepIndex];
+            const selectedItemText = window.tempGameState.items[window.tempGameState.selectedIndex];
+
+            const targetSlots = document.getElementById('order-target').children;
+            const targetSlot = targetSlots[stepIndex];
+
+            if(selectedItemText === correctText) {
+                targetSlot.innerHTML = `<span class="text-green-700 font-bold"><i class="fa-solid fa-check mr-2"></i>${selectedItemText}</span>`;
+                targetSlot.classList.add('bg-green-50', 'border-green-500', 'cursor-default');
+                targetSlot.removeAttribute('onclick');
+                document.getElementById(`order-item-${window.tempGameState.selectedIndex}`).style.display = 'none';
+                window.tempGameState.placedCount++;
+                window.tempGameState.selectedIndex = null;
+                
+                if(window.tempGameState.placedCount === window.tempGameState.items.length) {
+                    setTimeout(() => alert("Ordre Correct !"), 300);
+                }
+            } else {
+                targetSlot.classList.add('animate-pulse', 'bg-red-50');
+                setTimeout(() => targetSlot.classList.remove('animate-pulse', 'bg-red-50'), 500);
+            }
+        };
+
+        // --- 6. QUIZ ENGINE ---
+        function renderQuiz(container, chapterId) {
+            const chap = CHAPTERS.find(c => c.id === chapterId);
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto glass-panel p-8 rounded-2xl fade-in">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+                    <div id="quiz-content"></div>
+                </div>
+            `;
+            loadQuizQuestion(chap, 0);
+        }
+
+        function loadQuizQuestion(chap, index) {
+            const content = document.getElementById('quiz-content');
+            if (index >= chap.quiz.length) {
+                appState.completedQuizzes.add(chap.id);
+                updateProgress();
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fa-solid fa-trophy text-6xl text-yellow-400 mb-6"></i>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-4">Chapitre Terminé !</h2>
+                        <p class="text-slate-600 mb-6">Quiz validé pour "${chap.title}".</p>
+                        <button onclick="router('chapter', ${chap.id})" class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700">Continuer</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = chap.quiz[index];
+            content.innerHTML = `
+                <div class="flex justify-between text-sm text-slate-400 mb-4"><span>Question ${index + 1} / 10</span></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-6 leading-relaxed">${q.q}</h3>
+                <div class="space-y-3">
+                    ${q.options.map((opt, i) => `
+                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id})" class="w-full text-left p-4 border border-slate-200 rounded-lg hover:border-teal-400 hover:bg-teal-50 transition font-medium">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        window.handleQuizAnswer = (index, selected, correct, chapId) => {
+            if (selected === correct) {
+                appState.score += 10;
+                loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
+            } else {
+                alert("Faux. Réessayez.");
+            }
+        };
+
+        // --- INIT ---
+        window.onload = () => router('dashboard');
+
+    </script>
+</body>
+</html>
