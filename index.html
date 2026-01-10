@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masterclass Complète: Conflits & Négociation</title>
+    <title>Masterclass Pro: Gestion des Conflits & Négociation</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,8 +19,8 @@
             theme: {
                 extend: {
                     colors: {
-                        slate: { 850: '#151f32' },
-                        teal: { 450: '#2dd4bf' },
+                        slate: { 850: '#151f32', 900: '#0f172a' },
+                        teal: { 450: '#2dd4bf', 600: '#0d9488' },
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -32,38 +32,42 @@
     </script>
 
     <style>
-        body { background-color: #f0f4f8; color: #1e293b; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
+        body { background-color: #f1f5f9; color: #1e293b; }
+        .glass-panel { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Game Interactive Styles */
-        .game-card { transition: all 0.2s; user-select: none; }
-        .game-card.selected { ring: 2px; ring-color: #0f766e; background-color: #ccfbf1; transform: scale(1.02); border-color: #0f766e; }
-        .game-card.matched { background-color: #dcfce7; border-color: #22c55e; opacity: 0.6; pointer-events: none; color: #15803d; }
-        .game-card.wrong { background-color: #fee2e2; border-color: #ef4444; animation: shake 0.4s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        /* Advanced Game Styles */
+        .game-card { transition: all 0.2s; user-select: none; border: 1px solid #cbd5e1; }
+        .game-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .game-card.selected { ring: 3px; ring-color: #0f766e; background-color: #ccfbf1; border-color: #0f766e; transform: scale(1.02); z-index: 10; }
+        .game-card.matched { background-color: #dcfce7; border-color: #16a34a; color: #14532d; opacity: 0.7; pointer-events: none; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); }
+        .game-card.wrong { background-color: #fee2e2; border-color: #dc2626; animation: shakeHard 0.4s; }
+        @keyframes shakeHard { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
         
-        .sort-zone { min-height: 100px; transition: background 0.3s; }
+        .sort-zone { min-height: 140px; transition: all 0.3s; }
+        .sort-zone.drag-over { background-color: #e0f2fe; border-color: #0ea5e9; transform: scale(1.01); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Navbar -->
-    <nav class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+    <nav class="bg-slate-900 text-white p-4 shadow-xl sticky top-0 z-50 border-b border-slate-700">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="router('dashboard')">
-                <i class="fa-solid fa-book-open text-teal-400 text-2xl"></i>
+                <div class="bg-slate-800 p-2 rounded-lg border border-slate-600">
+                    <i class="fa-solid fa-graduation-cap text-teal-400 text-xl"></i>
+                </div>
                 <div>
-                    <h1 class="font-serif text-xl font-bold">Cours Intégral</h1>
-                    <p class="text-xs text-slate-400">Conflits, Gestion & Négociation</p>
+                    <h1 class="font-serif text-lg font-bold tracking-wide">Gestion Conflits & Négociation</h1>
+                    <p class="text-xs text-slate-400 font-medium">Niveau Expert</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
-                    <div class="text-xs text-slate-400">Progression Globale</div>
-                    <div class="w-32 h-2 bg-slate-700 rounded-full mt-1 overflow-hidden">
-                        <div id="global-progress" class="h-full bg-teal-400 w-0 transition-all duration-1000"></div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-widest">Mastery Level</div>
+                    <div class="w-40 h-2 bg-slate-800 rounded-full mt-1 overflow-hidden border border-slate-700">
+                        <div id="global-progress" class="h-full bg-gradient-to-r from-teal-400 to-teal-600 w-0 transition-all duration-1000 shadow-[0_0_10px_rgba(45,212,191,0.5)]"></div>
                     </div>
                 </div>
             </div>
@@ -71,227 +75,454 @@
     </nav>
 
     <!-- Main Content -->
-    <main id="app-container" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
+    <main id="app-container" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-auto">
         <!-- Dynamic Content -->
     </main>
 
     <footer class="bg-white border-t border-slate-200 mt-auto py-6">
-        <div class="text-center text-slate-500 text-sm">
-            &copy; 2023 Plateforme Éducative Avancée.
+        <div class="text-center text-slate-400 text-xs">
+            Formation Avancée basée sur le cours complet PDF.
         </div>
     </footer>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- 1. MASSIVE CONTENT DATABASE ---
+        // --- 1. COMPREHENSIVE DATABASE (6 CHAPTERS) ---
 
         const CHAPTERS = [
             {
                 id: 1,
-                title: "Chapitre 1 : Définitions & Généralités",
-                icon: "fa-layer-group",
+                title: "Chapitre 1 : Définitions, Types & Niveaux",
+                icon: "fa-cubes",
                 summary: `
-                    <h3 class="text-xl font-bold mb-4 text-teal-700">Qu'est-ce qu'un conflit ?</h3>
-                    <p class="mb-4">Le conflit est un processus engendré par une divergence (d'intérêts, de valeurs, d'opinions), réelle ou perçue, entre deux ou plusieurs parties interdépendantes et en interaction.</p>
-                    <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-500">
-                        <strong>Distinction Problème vs Conflit (Marsan, 2005) :</strong>
-                        <ul class="list-disc list-inside mt-2">
-                            <li><strong>Problème :</strong> Rationnel, mesurable, écart entre réel et souhaité.</li>
-                            <li><strong>Conflit :</strong> Émotionnel, opposition, accumulation d'insatisfactions.</li>
+                    <h3 class="text-2xl font-bold mb-4 text-teal-700 border-b pb-2">Essence du Conflit Organisationnel</h3>
+                    <p class="mb-4"><strong>Définition (Hellriegel et al., 1992) :</strong> Situation où individus ont des objectifs, cognitions ou émotions incompatibles, les conduisant à s'opposer.</p>
+                    <div class="bg-blue-50 p-5 rounded-lg mb-6 border-l-4 border-blue-600 shadow-sm">
+                        <h4 class="font-bold text-blue-900 mb-2">Distinction Critique : Problème vs Conflit</h4>
+                        <ul class="list-disc list-inside text-blue-800 space-y-1">
+                            <li><strong>Problème :</strong> Rationnel, mesurable, écart entre situation existante et souhaitée. <br><em class="text-xs text-blue-600">Ex: La machine est cassée.</em></li>
+                            <li><strong>Conflit :</strong> Émotionnel, opposition, accumulation d'insatisfactions non résolues. <br><em class="text-xs text-blue-600">Ex: Deux départements ne se parlent plus.</em></li>
                         </ul>
                     </div>
                     <h4 class="font-bold mb-2">Types de Conflits :</h4>
-                    <ul class="list-disc list-inside mb-4">
-                        <li>Mécaniques (Répartition de moyens).</li>
-                        <li>Sociaux Émotionnels (Enjeu identité).</li>
-                        <li>D'intérêts (Différence de point de vue).</li>
+                    <ul class="list-disc list-inside mb-4 text-slate-700">
+                        <li><strong>Mécaniques :</strong> Répartition de moyens (argent, espace).</li>
+                        <li><strong>Sociaux Émotionnels :</strong> Enjeu identitaire.</li>
+                        <li><strong>D'intérêts :</strong> Différence d'aspirations.</li>
                     </ul>
+                    <h4 class="font-bold mb-2">Niveaux :</h4>
+                    <p class="text-sm text-slate-600">Intrapersonnel → Interpersonnel → Intragroupe → Intergroupe → Intra-organisationnel.</p>
                 `,
                 games: [
                     {
                         type: "match",
-                        title: "Jeu 1: Reliez les Concepts",
+                        title: "Jeu 1: Analyse des Types de Conflits",
                         pairs: [
-                            { left: "Conflit Intrapersonnel", right: "Conflit intérieur avec soi-même" },
-                            { left: "Conflit Horizontal", right: "Entre employés du même niveau" },
-                            { left: "Conflit de Fond", right: "Désaccord sur les buts ou moyens" },
-                            { left: "Conflit Émotionnel", right: "Problèmes relationnels et personnalité" }
+                            { left: "Conflit de Fond", right: "Désaccord sur les buts ou les moyens" },
+                            { left: "Conflit Émotionnel", right: "Problèmes relationnels / personnalité" },
+                            { left: "Conflit Mécanique", right: "Répartition des ressources (argent/espace)" },
+                            { left: "Conflit d'Intérêts", right: "Différence de point de vue ou aspirations" }
                         ]
                     },
                     {
                         type: "fill",
-                        title: "Jeu 2: Complétez la Définition",
-                        text: "Un conflit est un processus engendré par une <u>_______</u> d'intérêts ou d'opinions. Il est souvent <u>_______</u> par des émotions. Il oppose des parties <u>_______</u>.",
-                        words: ["divergence", "teinté", "interdépendantes"]
+                        title: "Jeu 2: Théorie du Conflit (Niveau Expert)",
+                        text: "Selon Hellriegel, un conflit est une situation où les objectifs, cognitions ou <u>_______</u> sont incompatibles. Selon Marsan, un conflit résulte d'une accumulation d'<u>_______</u> non résolues. Un conflit destructeur nuit à la <u>_______</u> du groupe.",
+                        words: ["émotions", "insatisfactions", "cohésion"]
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Triez les Sources",
-                        categories: ["Facteurs Internes", "Facteurs Externes"],
+                        title: "Jeu 3: Catégorisation des Niveaux (Défis)",
+                        categories: ["Intra-Organisationnel", "Inter-Individuel", "Inter-Groupes"],
                         items: [
-                            { text: "Personnalité", cat: "Facteurs Internes" },
-                            { text: "Histoire ethnique", cat: "Facteurs Externes" },
-                            { text: "Incompatibilité de valeurs", cat: "Facteurs Internes" },
-                            { text: "Environnement économique", cat: "Facteurs Externes" }
+                            { text: "Opposition entre deux départements (ex: Ventes vs IT)", cat: "Inter-Groupes" },
+                            { text: "Conflit interne avec soi-même face à un choix", cat: "Intra-Organisationnel" },
+                            { text: "Tension entre deux collègues de même niveau", cat: "Inter-Individuel" },
+                            { text: "Opposition entre deux entreprises distinctes", cat: "Intra-Organisationnel" },
+                            { text: "Heurts dus à l'organisation de l'entreprise", cat: "Intra-Organisationnel" }
                         ]
                     },
                     {
                         type: "order",
-                        title: "Jeu 4: L'Échelle des Niveaux",
-                        items: ["Intrapersonnel", "Interpersonnel", "Intragroupe", "Intergroupe"]
+                        title: "Jeu 4: Ordre d'Implication et Échelle",
+                        items: ["Intra personnel (Soi-même)", "Interpersonnel (Individus)", "Intragroupe (Équipe)", "Intergroupe (Départements)"]
                     }
                 ],
                 quiz: [
-                    { q: "Quelle caractéristique distingue un Problème d'un Conflit ?", options: ["Le Problème est mesurable et rationnel.", "Le Conflit est toujours public.", "Le Problème est plus grave."], a: 0 },
-                    { q: "Qu'est-ce qu'un conflit 'Intrapersonnel' ?", options: ["Entre deux groupes.", "Entre deux services.", "Conflit intérieur avec soi-même (choix)."], a: 2 },
-                    { q: "Qu'est-ce qu'un conflit de fond ?", options: ["Désaccord sur les buts à poursuivre.", "Problème de personnalité.", "Conflit financier."], a: 0 },
-                    { q: "Quel type de conflit concerne la répartition de l'argent ou de l'espace ?", options: ["Conflit Mécanique.", "Conflit Social.", "Conflit d'Intérêt."], a: 0 },
-                    { q: "Le conflit horizontal oppose :", options: ["Un manager à un employé.", "Des employés du même niveau hiérarchique.", "Deux entreprises."], a: 1 },
-                    { q: "Qu'est-ce qu'un conflit 'Staff/Line' ?", options: ["Conflit vertical entre experts et opérationnels.", "Conflit entre concurrents.", "Conflit géographique."], a: 0 },
-                    { q: "Selon Lewis Coser, le conflit est une lutte sur :", options: ["Les valeurs et le pouvoir.", "Le sport.", "La météo."], a: 0 },
-                    { q: "Un conflit destructeur a pour conséquence :", options: ["La stimulation de la créativité.", "La diminution de la productivité.", "La résolution des problèmes."], a: 1 },
-                    { q: "Le conflit constructif permet :", options: ["De mettre à jour des problèmes latents.", "D'éliminer les employés.", "De créer du chaos."], a: 0 },
-                    { q: "Quelle phase précède souvent le conflit éclaté ?", options: ["La phase de Gestation.", "La phase de Déclin.", "La phase de Négociation."], a: 0 }
+                    { q: "Quelle est la caractéristique distinctive d'un 'Problème' ?", options: ["Il est émotionnel.", "Il est mesurable et rationnel.", "Il est toujours destructeur."], a: 1 },
+                    { q: "Qu'est-ce qu'un conflit de 'Fond' ?", options: ["Problème de personnalité.", "Désaccord sur les objectifs à atteindre.", "Conflit financier."], a: 1 },
+                    { q: "Selon Lewis Coser (1957), le conflit est une lutte sur :", options: ["Les valeurs et le pouvoir.", "Le sport.", "Le temps."], a: 0 },
+                    { q: "Un conflit constructif permet de :", options: ["Masquer les problèmes.", "Stimuler la créativité et mettre à jour des problèmes latents.", "Éliminer les employés."], a: 1 },
+                    { q: "Le conflit Horizontal oppose :", options: ["Un manager et un employé.", "Des unités du même niveau hiérarchique.", "Deux entreprises."], a: 1 },
+                    { q: "Quelle est la cause principale d'un conflit mécanique ?", options: ["L'identité.", "La répartition des moyens physiques.", "Les valeurs."], a: 1 },
+                    { q: "Quel niveau de conflit oppose deux personnes isolées ?", options: ["Intragroupe", "Intergroupe", "Interpersonnel"], a: 2 },
+                    { q: "Le conflit destructeur entraîne :", options: ["Une stimulation de la créativité.", "Une diminution de la productivité.", "Une meilleure cohésion."], a: 1 },
+                    { q: "Un conflit social émotionnel concerne :", options: ["L'argent.", "L'identité de l'une des parties.", "Les tâches."], a: 1 },
+                    { q: "L'interdépendance est-elle nécessaire au conflit ?", options: ["Non.", "Oui, les parties doivent être en interaction.", "Seulement en négociation."], a: 1 }
                 ]
             },
             {
                 id: 2,
-                title: "Chapitre 2 : Psychologie & Cycle du Conflit",
-                icon: "fa-masks-theater",
+                title: "Chapitre 2 : Sources, Causes & Cycle de Vie",
+                icon: "fa-chart-line",
                 summary: `
-                    <h3 class="text-xl font-bold mb-4 text-red-700">Le Triangle Dramatique de Karpman</h3>
-                    <p class="mb-4">Une analyse transactionnelle où les individus passent inconsciemment par trois rôles :</p>
-                    <ul class="list-disc list-inside mb-6">
-                        <li><strong>Persécuteur :</strong> Établit des règles irréalistes, agresse les faibles.</li>
-                        <li><strong>Sauveteur :</strong> Faux serviable, maintient l'autre en dépendance.</li>
-                        <li><strong>Victime :</strong> Se positionne comme incapable, cherche la pitié.</li>
+                    <h3 class="text-2xl font-bold mb-4 text-purple-700 border-b pb-2">Anatomie du Conflit</h3>
+                    <p class="mb-4">Un conflit fait souvent partie d'un réseau complexe. Il faut analyser au-delà des apparences.</p>
+                    <h4 class="font-bold mb-2">Sources de Conflit :</h4>
+                    <ul class="list-disc list-inside mb-4 text-slate-700">
+                        <li><strong>Manque d'information :</strong> Différence de perception.</li>
+                        <li><strong>Valeurs différentes :</strong> Travailler ensemble avec des systèmes de valeurs opposés.</li>
+                        <li><strong>Facteurs externes :</strong> Personnalité, histoire, ethnicité.</li>
+                        <li><strong>Le Changement :</strong> Source majeure de résistance (perte de contrôle, incertitude).</li>
                     </ul>
-                    <h3 class="text-xl font-bold mb-4 text-purple-700">Le Cycle de Vie du Conflit</h3>
-                    <ol class="list-decimal list-inside">
-                        <li><strong>Gestation :</strong> Naissance, période de latence.</li>
-                        <li><strong>Amplification :</strong> Cristallisation des positions, massification.</li>
-                        <li><strong>Manifestation :</strong> Mise à nu du mécontentement.</li>
-                        <li><strong>Déclin :</strong> Résolution ou diminution de l'intensité.</li>
-                    </ol>
+                    <div class="bg-orange-50 p-5 rounded-lg border-l-4 border-orange-500 mb-6">
+                        <h4 class="font-bold text-orange-900 mb-2">Le Cycle de Vie (4 Phases)</h4>
+                        <ol class="list-decimal list-inside text-orange-800 space-y-1">
+                            <li><strong>Gestation :</strong> Latence, naissance.</li>
+                            <li><strong>Amplification :</strong> Cristallisation, massification.</li>
+                            <li><strong>Manifestation :</strong> Éclatement du conflit.</li>
+                            <li><strong>Déclin :</strong> Résolution ou diminution.</li>
+                        </ol>
+                    </div>
                 `,
                 games: [
                     {
                         type: "match",
-                        title: "Jeu 1: Rôles du Triangle",
+                        title: "Jeu 1: Maîtrise du Cycle",
                         pairs: [
-                            { left: "Persécuteur", right: "S'en prend aux plus faibles" },
-                            { left: "Sauveteur", right: "Faussement serviable pour dépendance" },
-                            { left: "Victime", right: "Rebelle ou soumise, cherche aide" },
-                            { left: "Adulte (Sortie)", right: "Neutre, rationnel et assertif" }
+                            { left: "Gestation", right: "Première période de latence / Naissance" },
+                            { left: "Amplification", right: "Cristallisation des positions / Massification" },
+                            { left: "Manifestation", right: "Mise à nu du mécontentement / Éclatement" },
+                            { left: "Déclin", right: "Résolution ou diminution de l'intensité" }
                         ]
                     },
                     {
                         type: "fill",
-                        title: "Jeu 2: Le Cycle du Conflit",
-                        text: "La première phase est la <u>_______</u> (latence). Vient ensuite l'<u>_______</u> où les positions se cristallisent. Ensuite la <u>_______</u> où le conflit éclate. Enfin le <u>_______</u>.",
-                        words: ["Gestation", "Amplification", "Manifestation", "Déclin"]
+                        title: "Jeu 2: Analyse des Raisons (Expert)",
+                        text: "La <u>_______</u> des informations conduit souvent à l'incompréhension. Le <u>_______</u> est inhérent au développement mais active des <u>_______</u> de force.",
+                        words: ["différence", "changement", "épreuves"]
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Interventions Manageriales",
-                        categories: ["Phase de Début", "Phase de Fin"],
+                        title: "Jeu 3: Interventions du Gestionnaire",
+                        categories: ["Phase de Début (Gestation/Amplif.)", "Phase de Fin (Manifestation/Déclin)"],
                         items: [
-                            { text: "Actions préventives pour extirper les racines", cat: "Phase de Début" },
-                            { text: "Découvrir d'autres zones de tensions", cat: "Phase de Manifestation" },
-                            { text: "Éradiquer les racines du conflit", cat: "Phase de Déclin" },
-                            { text: "Éviter la massification des acteurs", cat: "Phase d'Amplification" }
+                            { text: "Éviter la massification des acteurs", cat: "Phase de Début (Gestation/Amplif.)" },
+                            { text: "Découvrir d'autres zones de tensions", cat: "Phase de Fin (Manifestation/Déclin)" },
+                            { text: "Éradiquer les racines du conflit", cat: "Phase de Fin (Manifestation/Déclin)" },
+                            { text: "Actions préventives pour extirper les racines", cat: "Phase de Début (Gestation/Amplif.)" }
                         ]
                     },
                     {
                         type: "order",
-                        title: "Jeu 4: Sortir du Triangle",
-                        items: ["Prendre conscience de son rôle", "Convaincre que le jeu est stérile", "Ne pas entrer dans le jeu", "Donner des signes positifs"]
+                        title: "Jeu 4: Raisons de Résistance au Changement",
+                        items: ["Perte de contrôle", "Incertitude / Manque d'info", "Perdre la face", "Plus de travail"]
                     }
                 ],
                 quiz: [
-                    { q: "Qui a théorisé le Triangle Dramatique ?", options: ["Freud", "Karpman", "Maslow"], a: 1 },
-                    { q: "Quel rôle 'établit des règles irréalistes' ?", options: ["La Victime", "Le Sauveteur", "Le Persécuteur"], a: 2 },
-                    { q: "Pourquoi le Sauveteur aide-t-il vraiment ?", options: ["Par bonté.", "Pour maintenir l'autre en dépendance.", "Par obligation."], a: 1 },
-                    { q: "Quelle est la première phase du cycle du conflit ?", options: ["Explosion", "Gestation", "Déclin"], a: 1 },
+                    { q: "Quelle phase du cycle correspond à la 'première période de latence' ?", options: ["Manifestation", "Gestation", "Déclin"], a: 1 },
                     { q: "Durant quelle phase les positions se cristallisent-elles ?", options: ["Gestation", "Amplification", "Déclin"], a: 1 },
-                    { q: "Comment sortir du rôle de Persécuteur ?", options: ["Être tolérant et juger moins.", "Aider les autres.", "Se plaindre."], a: 0 },
-                    { q: "Qu'est-ce que la phase de Manifestation ?", options: ["Le début du conflit.", "La mise à nu du mécontentement.", "La fin."], a: 1 },
-                    { q: "Le Sauveteur fait-il vraiment avancer les choses ?", options: ["Oui, toujours.", "Non, il consomme de l'énergie inutilement.", "Parfois."], a: 1 },
-                    { q: "Quel rôle le superviseur doit-il éviter ?", options: ["Adulte Neutre", "Victime ou Sauveteur chronique", "Leader"], a: 1 },
-                    { q: "La phase de Déclin correspond à :", options: ["La résolution ou la diminution.", "Le début de la bagarre.", "L'analyse."], a: 0 }
+                    { q: "Le fait que deux personnes ne perçoivent pas identiquement les choses est une source de conflit liée à :", options: ["Aux valeurs.", "Au manque d'information.", "À l'identité."], a: 1 },
+                    { q: "Pourquoi le changement est-il une source de conflit ?", options: ["Car il est ennuyeux.", "Car il active des épreuves de force et des stress.", "Car il est illégal."], a: 1 },
+                    { q: "Quelle est l'une des raisons de 'perdre la face' ?", options: ["Gagner plus d'argent.", "Être imposé de reconnaître que le passé n'était pas bon.", "Avoir plus de vacances."], a: 1 },
+                    { q: "En phase d'amplification, le gestionnaire doit :", options: ["Ignorer le conflit.", "Éviter la massification des acteurs.", "Sanctionner immédiatement."], a: 1 },
+                    { q: "L'intérêt de prolonger la phase de manifestation est de :", options: ["Aggraver la situation.", "Découvrir d'autres zones de tensions.", "Fuir ses responsabilités."], a: 1 },
+                    { q: "Qu'est-ce que la phase de Déclin ?", options: ["Le début du conflit.", "La résolution ou la diminution d'intensité.", "L'explosion."], a: 1 },
+                    { q: "Les 'facteurs externes' incluent :", options: ["Les rôles mal définis.", "La personnalité, l'histoire, l'ethnicité.", "Le manque d'information."], a: 1 },
+                    { q: "Quelle stratégie en début de conflit ?", options: ["Curative positive.", "Préventive ou offensive.", "Défensive totalitaire."], a: 1 }
                 ]
             },
             {
                 id: 3,
-                title: "Chapitre 3 : Négociation & ZAP",
-                icon: "fa-handshake",
+                title: "Chapitre 3 : Psychologie (Triangle de Karpman)",
+                icon: "fa-masks-theater",
                 summary: `
-                    <h3 class="text-xl font-bold mb-4 text-teal-700">La Négociation</h3>
-                    <p class="mb-4">Processus de décision visant un accord non-violent entre parties interdépendantes.</p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-green-50 p-3 rounded">
-                            <strong>Stratégie Intégrative :</strong>
-                            <ul><li>Coopération</li><li>Gagnant-Gagnant</li><li>Partenaire</li></ul>
+                    <h3 class="text-2xl font-bold mb-4 text-red-700 border-b pb-2">Le Triangle Dramatique (Karpman)</h3>
+                    <p class="mb-6">Une analyse transactionnelle expliquant les jeux psychologiques stériles.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200 text-center">
+                            <i class="fa-solid fa-skull text-2xl text-red-500 mb-2"></i>
+                            <strong class="block text-red-900">Persécuteur</strong>
+                            <p class="text-xs text-red-700 mt-1">Règles irréalistes, agressivité, s'en prend aux faibles.</p>
                         </div>
-                        <div class="bg-red-50 p-3 rounded">
-                            <strong>Stratégie Distributive :</strong>
-                            <ul><li>Conflit</li><li>Gagnant-Perdant</li><li>Adversaire</li></ul>
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+                            <i class="fa-solid fa-life-ring text-2xl text-blue-500 mb-2"></i>
+                            <strong class="block text-blue-900">Sauveteur</strong>
+                            <p class="text-xs text-blue-700 mt-1">Faux serviable, maintient l'autre en dépendance.</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
+                            <i class="fa-solid fa-user-injured text-2xl text-yellow-600 mb-2"></i>
+                            <strong class="block text-yellow-900">Victime</strong>
+                            <p class="text-xs text-yellow-700 mt-1">Incapable, cherche la pitié ou se rebelle.</p>
                         </div>
                     </div>
-                    <h4 class="font-bold mb-2">Techniques Majeures :</h4>
-                    <ul class="list-disc list-inside mb-4">
-                        <li><strong>Salami (Point par point) :</strong> Diviser les difficultés.</li>
-                        <li><strong>Paquet (Donnant-donnant) :</strong> Échange global de concessions.</li>
-                        <li><strong>Faux Pivot :</strong> Faire semblant de lâcher un point pour en obtenir un autre.</li>
-                    </ul>
-                    <h4 class="font-bold mb-2">ZAP (Zone d'Accord Possible) :</h4>
-                    <p>L'espace où les limites acceptables des deux parties se chevauchent.</p>
+                    <h4 class="font-bold mb-2">Sortir du Triangle :</h4>
+                    <p class="text-sm text-slate-700">Adopter le rôle d'<strong>Adulte Neutre</strong> : Rationnel, assertif, prendre du recul, ne pas entrer dans le jeu.</p>
                 `,
                 games: [
                     {
                         type: "match",
-                        title: "Jeu 1: Stratégies & Techniques",
+                        title: "Jeu 1: Profilage des Rôles",
                         pairs: [
-                            { left: "Intégrative", right: "Recherche du Gagnant-Gagnant" },
-                            { left: "Distributive", right: "Mode Gagnant-Perdant" },
-                            { left: "Salami", right: "Diviser pour mieux résoudre" },
-                            { left: "Faux Pivot", right: "Objet factice pour obtenir une concession" }
+                            { left: "Persécuteur", right: "Établit des règles irréalistes / Agresse les faibles" },
+                            { left: "Sauveteur", right: "Faussement serviable / Maintient la dépendance" },
+                            { left: "Victime", right: "Rebelle ou soumise / Cherche la pitié" },
+                            { left: "Adulte (Sortie)", right: "Neutre / Rationnel / Assertif" }
                         ]
                     },
                     {
                         type: "fill",
-                        title: "Jeu 2: Définition ZAP",
-                        text: "La <u>_______</u> est la zone où il y a un chevauchement entre les limites acceptables des parties. Sans elle, il n'y a <u>_______</u> d'accord possible.",
-                        words: ["ZAP", "pas"]
+                        title: "Jeu 2: Dynamique Relationnelle",
+                        text: "Le triangle dramatique explique pourquoi les relations humaines ne sont pas toujours <u>_______</u>. C'est un terreau pour les situations de communication <u>_______</u>. Le meilleur moyen de l'éviter est de ne pas <u>_______</u> un rôle spontanément.",
+                        words: ["efficaces", "bloquées", "endosser"]
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Attitudes en Négociation",
-                        categories: ["Constructif", "Destructeur"],
+                        title: "Jeu 3: Intervention Superviseur vs Sauveteur",
+                        categories: ["Attitude Sauveteur (Mauvaise)", "Attitude Superviseur (Bonne)"],
                         items: [
-                            { text: "Reconnaissance entière de l'autre", cat: "Constructif" },
-                            { text: "Utilisation de menaces", cat: "Destructeur" },
-                            { text: "Attitude conciliante", cat: "Constructif" },
-                            { text: "Intransigeance globale", cat: "Destructeur" }
+                            { text: "S'occuper des affaires des autres", cat: "Attitude Sauveteur (Mauvaise)" },
+                            { text: "Attendre qu'il y ait une demande", cat: "Attitude Superviseur (Bonne)" },
+                            { text: "Se projeter dans la situation de l'autre", cat: "Attitude Sauveteur (Mauvaise)" },
+                            { text: "Aider la personne à trouver SA solution", cat: "Attitude Superviseur (Bonne)" }
                         ]
                     },
                     {
                         type: "order",
-                        title: "Jeu 4: Étapes de la Préparation",
-                        items: ["Diagnostic de la situation", "Détermination des objectifs", "Mise au point stratégie", "Organisation matérielle"]
+                        title: "Jeu 4: Processus de Sortie du Triangle",
+                        items: ["Prendre conscience de son rôle", "Prendre du recul (Adulte)", "Ne pas entrer dans le jeu", "Donner des signes positifs"]
                     }
                 ],
                 quiz: [
-                    { q: "Qu'est-ce que la ZAP ?", options: ["Zone d'Action Principale", "Zone d'Accord Possible", "Zone d'Application Pénale"], a: 1 },
+                    { q: "Qui a théorisé le Triangle Dramatique ?", options: ["Freud", "Karpman", "Maslow"], a: 1 },
+                    { q: "Quel rôle 'établit des règles irréalistes et les applique avec dureté' ?", options: ["La Victime", "Le Sauveteur", "Le Persécuteur"], a: 2 },
+                    { q: "Pourquoi le Sauveteur maintient-il l'autre en dépendance ?", options: ["Par bonté.", "Pour garder les autres sous son pouvoir et continuer à jouer.", "Par obligation légale."], a: 1 },
+                    { q: "Quelle phase du conflit est comparable à une 'période de latence' ?", options: ["Gestation", "Amplification", "Déclin"], a: 0 },
+                    { q: "Comment se comporte un superviseur en 'Persécuteur' ?", options: ["Il est tolérant.", "Il agresse verbalement et juge.", "Il demande de l'aide."], a: 1 },
+                    { q: "Pour sortir du rôle de Victime, il faut :", options: ["Se plaindre davantage.", "Renforcer sa confiance en soi et prendre ses responsabilités.", "Accuser les autres."], a: 1 },
+                    { q: "Qu'est-ce que le rôle d'Adulte ?", options: ["Un rôle de jeu psychologique.", "Une position neutre, rationnelle et authentique.", "Un rôle de suiveur."], a: 1 },
+                    { q: "Le triangle dramatique est utile pour :", options: ["Identifier les rôles dans une dynamique insatisfaisante.", "Punir les employés.", "Créer des conflits."], a: 0 },
+                    { q: "Donner des 'strokes' (signes de reconnaissance) est une technique pour :", options: ["Manipuler.", "Éviter le triangle en dehors du stress.", "Harcèler."], a: 1 },
+                    { q: "Si je suis Sauveteur, je dois vérifier :", options: ["Si j'ai été explicitement demandé.", "Si l'autre est laid.", "Si je peux gagner de l'argent."], a: 0 }
+                ]
+            },
+            {
+                id: 4,
+                title: "Chapitre 4 : Gestion RH & Employés Difficiles",
+                icon: "fa-user-tie",
+                summary: `
+                    <h3 class="text-2xl font-bold mb-4 text-slate-700 border-b pb-2">Intervention Manageriale & Discipline</h3>
+                    <p class="mb-4">La distinction entre un employé difficile (comportement volontaire) et en difficulté (compétence/motivation) est cruciale.</p>
+                    
+                    <h4 class="font-bold mb-2 text-red-600">Gradation des Sanctions (Règle d'or)</h4>
+                    <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                        <span class="bg-white border px-2 py-1 rounded">1. Réprimande verbale</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="bg-white border px-2 py-1 rounded">2. Avertissement écrit</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="bg-white border px-2 py-1 rounded">3. Suspension (courte)</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="bg-white border px-2 py-1 rounded">4. Suspension (longue)</span>
+                        <span class="text-slate-400">→</span>
+                        <span class="bg-white border px-2 py-1 rounded">5. Congédiement</span>
+                    </div>
+                    
+                    <h4 class="font-bold mb-2">Faute Grave :</h4>
+                    <p class="text-sm text-slate-600">Vol, fraude, violence. Dans ce cas, la gradation <strong>ne s'applique pas</strong> (Article 2088 Code Civil).</p>
+                    <h4 class="font-bold mb-2 mt-4">Règles de sanction :</h4>
+                    <ul class="list-disc list-inside text-slate-700">
+                        <li>Communication adéquate.</li>
+                        <li>Proportionnalité de la peine.</li>
+                        <li>Tolérance (dans certains cas).</li>
+                        <li>Examen des circonstances.</li>
+                    </ul>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Distinction Employé",
+                        pairs: [
+                            { left: "Employé Difficile", right: "Comportement inadéquat volontaire / Déviant" },
+                            { left: "Employé en Difficulté", right: "Problème de compétence ou de motivation" },
+                            { left: "Faute Grave", right: "Violence, vol, fraude (Gradation non applicable)" },
+                            { left: "Mesure Disciplinaire", right: "En cas de manquement volontaire" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Cadre Juridique (Expert)",
+                        text: "L'employé doit effectuer son travail avec <u>_______</u> et diligence (Art. 2088). En cas de faute grave, la <u>_______</u> des sanctions ne s'applique pas. La sanction doit être <u>_______</u> par rapport à la faute.",
+                        words: ["prudence", "gradation", "proportionnelle"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Facteurs Atténuants vs Aggravants",
+                        categories: ["Atténuants", "Aggravants"],
+                        items: [
+                            { text: "Antécédents irréprochables", cat: "Atténuants" },
+                            { text: "Récidive fréquente", cat: "Aggravants" },
+                            { text: "Remise en cause de l'autorité publique", cat: "Aggravants" },
+                            { text: "Reconnaissance immédiate de la faute", cat: "Atténuants" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: L'Échelle de Discipline (Ordre Strict)",
+                        items: ["Réprimande verbale", "Avertissement écrit", "Suspension (1 jour)", "Suspension (longue)", "Congédiement"]
+                    }
+                ],
+                quiz: [
+                    { q: "Quelle est la différence fondamentale entre un employé difficile et en difficulté ?", options: ["L'âge.", "La volonté du comportement inadéquat vs un problème de compétence.", "Le salaire."], a: 1 },
+                    { q: "Quelle est la première étape de la gradation des sanctions ?", options: ["L'avertissement écrit.", "La réprimande verbale.", "Le congédiement."], a: 1 },
+                    { q: "En cas de faute grave (ex: violence), que se passe-t-il ?", options: ["On commence par la réprimande.", "La gradation ne s'applique pas, sanction possible.", "On ne peut rien faire."], a: 1 },
+                    { q: "Quelle règle faut-il respecter concernant la gravité de la sanction ?", options: ["Elle doit être maximale.", "Elle doit être proportionnelle à la faute.", "Elle doit être arbitraire."], a: 1 },
+                    { q: "Qu'est-ce qu'une mesure administrative ?", options: ["Une punition.", "Une sanction pour manquement involontaire.", "Un licenciement."], a: 1 },
+                    { q: "L'article 2088 du Code civil du Québec impose :", options: ["De ne pas travailler.", "D'effectuer le travail avec prudence et diligence.", "De grignoter."], a: 1 },
+                    { q: "Un facteur aggravant typique est :", options: ["La reconnaissance de la faute.", "La récidive fréquente.", "Un rendement satisfaisant."], a: 1 },
+                    { q: "Pourquoi la communication est-elle cruciale lors d'une sanction ?", options: ["Pour humilier l'employé.", "Pour s'assurer qu'il comprend bien les attentes.", "Pour perdre du temps."], a: 1 },
+                    { q: "Un employé difficile influence souvent le :", options: ["Climat de travail positivement.", "Climat de travail négativement.", "Salaire des autres."], a: 1 },
+                    { q: "La tolérance est une règle de sanction :", options: ["Toujours applicable.", "À appliquer avant de sanctionner (sauf faute grave).", "Jamais applicable."], a: 1 }
+                ]
+            },
+            {
+                id: 5,
+                title: "Chapitre 5 : Stratégies de Négociation",
+                icon: "fa-chess",
+                summary: `
+                    <h3 class="text-2xl font-bold mb-4 text-teal-700 border-b pb-2">Théorie & Stratégie</h3>
+                    <p class="mb-4">La négociation est un processus de décision visant un accord non-violent entre parties interdépendantes.</p>
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-bold text-green-800">Stratégie Intégrative</h4>
+                            <p class="text-sm text-green-700"><strong>Coopération / Gagnant-Gagnant</strong>. L'autre est un partenaire. Recherche de solutions créatives.</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h4 class="font-bold text-red-800">Stratégie Distributive</h4>
+                            <p class="text-sm text-red-700"><strong>Conflit / Gagnant-Perdant</strong>. L'autre est un adversaire. Utilisation de la force/pouvoir.</p>
+                        </div>
+                    </div>
+                    <h4 class="font-bold mb-2">Déterminants du choix :</h4>
+                    <ul class="list-disc list-inside text-slate-700">
+                        <li>Rapport de force (Équilibre nécessaire).</li>
+                        <li>Pression des buts (Intensité de l'engagement).</li>
+                        <li>Nature des points (Distributifs vs Intégratifs).</li>
+                    </ul>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Stratégies vs Comportements",
+                        pairs: [
+                            { left: "Intégrative", right: "Reconnaissance entière de l'autre / Partenaire" },
+                            { left: "Distributive", right: "Intransigeance globale / Adversaire" },
+                            { left: "Coopération", right: "Éviter les chantages et la coercition" },
+                            { left: "Competition", right: "Utilisation de tous les moyens de pression" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Définitions Avancées",
+                        text: "La négociation est l'activité mettant en présence deux ou plusieurs parties qui, en raison de leur <u>_______</u>, veulent trouver une issue <u>_______</u> et non-violente. Elle fait appel à l'<u>_______</u> et la coopération.",
+                        words: ["interdépendance", "satisfaisante", "compromis"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Comportements en Négociation",
+                        categories: ["Intégratif (Coopératif)", "Distributif (Compétitif)"],
+                        items: [
+                            { text: "Ambiance positive / Créativité", cat: "Intégratif (Coopératif)" },
+                            { text: "Aggressivité / Hostilité", cat: "Distributif (Compétitif)" },
+                            { text: "Acceptation de concessions mutuelles", cat: "Intégratif (Coopératif)" },
+                            { text: "Utilisation de menaces / Agressivité", cat: "Distributif (Compétitif)" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: Étapes de Préparation",
+                        items: ["Diagnostic de la situation", "Détermination des objectifs", "Mise au point d'une stratégie", "Organisation matérielle"]
+                    }
+                ],
+                quiz: [
                     { q: "Quelle stratégie vise le 'Gagnant-Gagnant' ?", options: ["Distributive", "Intégrative", "Offensive"], a: 1 },
-                    { q: "La technique 'Salami' consiste à :", options: ["Tout donner d'un coup.", "Diviser les difficultés en parcelles.", "Manger pendant la réunion."], a: 1 },
-                    { q: "Dans une négociation distributive, l'autre partie est vue comme :", options: ["Un partenaire", "Un adversaire", "Un ami"], a: 1 },
-                    { q: "Quelle technique consiste à faire un échange global ?", options: ["Point par point", "Paquet (Donnant-donnant)", "Faux Pivot"], a: 1 },
-                    { q: "Qu'est-ce qu'un 'Faux Pivot' ?", options: ["Une vraie rupture.", "Une prétention factice pour une concession réelle.", "Un type de siège."], a: 1 },
-                    { q: "La préparation commence par :", options: ["L'organisation matérielle", "Le diagnostic de la situation", "La signature"], a: 1 },
-                    { q: "Pour négocier, faut-il un minimum de points d'accord ?", options: ["Non", "Oui, les convergences", "Seulement si on est ami"], a: 1 },
-                    { q: "Qu'est-ce que la 'gradation' dans les sanctions ?", options: ["Tout donner tout de suite.", "Échelonner de la réprimande au congédiement.", "Négocier."], a: 1 },
-                    { q: "Quelle est la meilleure alternative à l'accord ?", options: ["Se battre", "La fuite", "La meilleure option hors négociation"], a: 2 }
+                    { q: "Dans une stratégie distributive, l'autre partie est vue comme :", options: ["Un partenaire", "Un adversaire", "Un ami"], a: 1 },
+                    { q: "Qu'est-ce que l'interdépendance ?", options: ["L'indépendance totale.", "La nécessité mutuelle d'interaction pour atteindre les buts.", "La haine."], a: 1 },
+                    { q: "Quelle est la conséquence d'un rapport de force déséquilibré ?", options: ["Une coopération accrue.", "Une attitude conflictuelle de la partie dominante.", "Une ZAP plus large."], a: 1 },
+                    { q: "La pression des buts influence le comportement : comment ?", options: ["Forte intensité = Attitude conflictuelle.", "Forte intensité = Attitude coopérative (pour satisfaire objectifs).", "Aucun effet."], a: 1 },
+                    { q: "Quelle stratégie adopter si les points sont 'mixtes' ?", options: ["Toujours distributive.", "Toujours intégrative.", "Dépend du tournant de la négociation."], a: 2 },
+                    { q: "Qui a défini la négociation comme 'agir, faire circuler, échanger' ?", options: ["Dimitri Weiss", "Christophe Dupont", "Sigmund Freud"], a: 0 },
+                    { q: "Qu'est-ce que la 'Stratégie Offensive' ?", options: ["Interdire l'expression.", "Créer des changements volontairement pour dynamiser.", "Médier."], a: 1 },
+                    { q: "L'influence de l'environnement :", options: ["Est négligeable.", "Doit être prise en compte pour choisir la stratégie.", "Force toujours la coopération."], a: 1 },
+                    { q: "Une négociation réussie est-elle toujours coopérative ?", options: ["Oui, toujours.", "Non, elle peut être un mixte de compromis et coopération.", "Jamais."], a: 1 }
+                ]
+            },
+            {
+                id: 6,
+                title: "Chapitre 6 : Techniques & ZAP (Hard)",
+                icon: "fa-cogs",
+                summary: `
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-700 border-b pb-2">Techniques Majeures & ZAP</h3>
+                    <p class="mb-4">La Zone d'Accord Possible (ZAP) est cruciale pour un win-win.</p>
+                    
+                    <div class="bg-indigo-50 p-4 rounded-lg mb-6 border-l-4 border-indigo-500">
+                        <h4 class="font-bold text-indigo-900">Calcul de la ZAP</h4>
+                        <p class="text-sm text-indigo-800">ZAP Existe si : <strong>Max(Position De Repli A, Position De Repli B)</strong> < <strong>Min(Position Affichée A, Position Affichée B)</strong></p>
+                    </div>
+
+                    <h4 class="font-bold mb-2">Techniques Majeures :</h4>
+                    <ul class="list-disc list-inside text-slate-700 mb-4">
+                        <li><strong>Point par point (Salami) :</strong> Diviser les difficultés.</li>
+                        <li><strong>Donnant-donnant (Paquet) :</strong> Échange global de concessions.</li>
+                        <li><strong>Faux Pivot :</strong> Prétention factice pour obtenir une vraie concession.</li>
+                        <li><strong>Élargissement :</strong> Ajouter des clauses ou redéfinir le problème.</li>
+                    </ul>
+                    <h4 class="font-bold mb-2">Techniques Secondaires :</h4>
+                    <p class="text-sm text-slate-600">Globalisation, Bilan, Les Quatre Marches.</p>
+                `,
+                games: [
+                    {
+                        type: "match",
+                        title: "Jeu 1: Maîtrise des Techniques",
+                        pairs: [
+                            { left: "Technique du Salami", right: "Diviser les difficultés en parcelles" },
+                            { left: "Technique du Paquet", right: "Solution d'ensemble par échange de concessions" },
+                            { left: "Faux Pivot", right: "Prétention factice abandonnée pour un vrai gain" },
+                            { left: "Élargissement", right: "Ajouter des clauses pour dépasser une impasse" }
+                        ]
+                    },
+                    {
+                        type: "fill",
+                        title: "Jeu 2: Le Concept ZAP",
+                        text: "La <u>_______</u> est la zone de chevauchement acceptable. Si la 'Position de Repli' de l'acheteur est supérieure à la 'Position Affichée' du vendeur, il y a <u>_______</u> d'accord. Le négociateur doit choisir la technique <u>_______</u> à la situation.",
+                        words: ["ZAP", "pas", "adaptée"]
+                    },
+                    {
+                        type: "sort",
+                        title: "Jeu 3: Classification des Techniques",
+                        categories: ["Techniques Majeures", "Techniques Secondaires"],
+                        items: [
+                            { text: "Salami (Point par point)", cat: "Techniques Majeures" },
+                            { text: "Globalisation", cat: "Techniques Secondaires" },
+                            { text: "Élargissement", cat: "Techniques Majeures" },
+                            { text: "Technique des Quatre Marches", cat: "Techniques Secondaires" }
+                        ]
+                    },
+                    {
+                        type: "order",
+                        title: "Jeu 4: Les Quatre Marches (Technique Secondaire)",
+                        items: ["Solution idéale pour soi", "Solution ironique pour l'autre", "Solution peu avantageuse pour soi", "Solution optimisante commune"]
+                    }
+                ],
+                quiz: [
+                    { q: "Qu'est-ce que la ZAP ?", options: ["Zone d'Action Principale", "Zone d'Accord Possible (Overlap)", "Zone d'Application Pénale"], a: 1 },
+                    { q: "La technique 'Salami' consiste à :", options: ["Diviser les difficultés.", "Manger pendant la réunion.", "Faire un paquet global."], a: 0 },
+                    { q: "Quelle technique utilise des 'prétentions factices' ?", options: ["Le Faux Pivot", "L'Élargissement", "Le Bilan"], a: 0 },
+                    { q: "Qu'est-ce que la 'Technique des Quatre Marches' ?", options: ["Une méthode de marche à pied.", "Une méthode de comparaison de solutions pour trouver l'optimale.", "Un jeu de société."], a: 1 },
+                    { q: "La 'Globalisation' consiste à :", options: ["Diviser les problèmes.", "Convertir l'ensemble des objets en une mesure unique.", "Ignorer l'autre."], a: 1 },
+                    { q: "Quand utiliser la technique de l'Élargissement ?", options: ["Seulement pour perdre.", "Pour sortir d'une impasse en redéfinissant le problème.", "Pour sanctionner."], a: 1 },
+                    { q: "La 'Tactique' se distingue de la 'Stratégie' car :", options: ["Elle est le plan global.", "Elle est une initiative ponctuelle et opportuniste.", "Elle dure longtemps."], a: 1 },
+                    { q: "Qu'est-ce qu'une 'Position de Repli' ?", options: ["Ce qu'on veut vraiment.", "La limite basse en dessous de laquelle on refuse l'accord.", "Une faute."], a: 1 },
+                    { q: "Dans la technique du 'Paquet', les priorités doivent être :", options: ["Identiques.", "Complémentaires (utilités différentes).", "Inexistantes."], a: 1 },
+                    { q: "Pourquoi le 'Bilan' est-il utile ?", options: ["Pour dormir.", "Pour dresser la balance coûts/avantages des concessions.", "Pour crier."], a: 1 }
                 ]
             }
         ];
@@ -303,7 +534,6 @@
             score: 0
         };
 
-        // Global temporary state for active games
         window.tempGameState = {};
 
         // --- 3. CORE FUNCTIONS ---
@@ -332,7 +562,7 @@
         }
 
         function updateProgress() {
-            const total = CHAPTERS.length * 10; // 10 questions per chapter
+            const total = CHAPTERS.length * 10; 
             const done = appState.completedQuizzes.size * 10;
             const pct = Math.round((done / total) * 100);
             const bar = document.getElementById('global-progress');
@@ -343,26 +573,26 @@
 
         function renderDashboard(container) {
             let html = `
-                <div class="text-center mb-10">
-                    <h2 class="text-4xl font-serif font-bold text-slate-800 mb-4">Programme de Formation</h2>
-                    <p class="text-slate-500">Sélectionnez un chapitre pour accéder au cours, aux 4 jeux et au quiz.</p>
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-serif font-bold text-slate-900 mb-4">Programme Avancé</h2>
+                    <p class="text-slate-500">Parcourez les 6 chapitres, maîtrisez les jeux complexes et validez vos compétences.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             `;
             CHAPTERS.forEach(chap => {
                 const isComplete = appState.completedQuizzes.has(chap.id);
                 html += `
-                    <div onclick="router('chapter', ${chap.id})" class="glass-panel p-6 rounded-2xl cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border-t-4 ${isComplete ? 'border-green-500' : 'border-teal-500'}">
+                    <div onclick="router('chapter', ${chap.id})" class="glass-panel p-6 rounded-2xl cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-t-4 ${isComplete ? 'border-green-500 bg-green-50/50' : 'border-teal-600'}">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-slate-100 rounded-lg text-slate-700">
+                            <div class="p-3 bg-slate-100 rounded-lg text-slate-600">
                                 <i class="fa-solid ${chap.icon} text-2xl"></i>
                             </div>
-                            ${isComplete ? '<i class="fa-solid fa-circle-check text-green-500 text-xl"></i>' : ''}
+                            ${isComplete ? '<div class="bg-green-500 text-white p-2 rounded-full shadow-lg"><i class="fa-solid fa-check"></i></div>' : ''}
                         </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">${chap.title}</h3>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2 leading-tight">${chap.title}</h3>
                         <div class="flex gap-2 mt-3 text-xs text-slate-500">
-                            <span class="bg-slate-100 px-2 py-1 rounded">4 Jeux</span>
-                            <span class="bg-slate-100 px-2 py-1 rounded">10 Quiz</span>
+                            <span class="bg-slate-100 px-2 py-1 rounded font-semibold">4 Jeux</span>
+                            <span class="bg-slate-100 px-2 py-1 rounded font-semibold">10 Quiz</span>
                         </div>
                     </div>
                 `;
@@ -377,55 +607,60 @@
             let gamesHtml = '';
             chap.games.forEach((g, index) => {
                 let icon = 'fa-gamepad';
-                if(g.type === 'match') icon = 'fa-link';
-                if(g.type === 'fill') icon = 'fa-pen-to-square';
-                if(g.type === 'sort') icon = 'fa-arrow-right-arrow-left';
-                if(g.type === 'order') icon = 'fa-arrow-down-1-9';
+                if(g.type === 'match') icon = 'fa-bezier-curve';
+                if(g.type === 'fill') icon = 'fa-ellipsis';
+                if(g.type === 'sort') icon = 'fa-layer-group';
+                if(g.type === 'order') icon = 'fa-list-ol';
                 
                 gamesHtml += `
-                    <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md cursor-pointer border-l-4 border-teal-400 transition flex justify-between items-center">
+                    <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-white p-5 rounded-xl shadow-sm hover:shadow-md cursor-pointer border-l-4 border-slate-300 hover:border-teal-500 transition flex justify-between items-center group">
                         <div>
-                            <h4 class="font-bold text-slate-700">${g.title}</h4>
-                            <p class="text-xs text-slate-500 capitalize">Type: ${g.type}</p>
+                            <h4 class="font-bold text-slate-700 group-hover:text-teal-700 transition">${g.title}</h4>
+                            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">Niveau: Expert • ${g.type}</p>
                         </div>
-                        <div class="text-teal-500"><i class="fa-solid ${icon}"></i></div>
+                        <div class="text-slate-300 group-hover:text-teal-500 transition"><i class="fa-solid ${icon} text-xl"></i></div>
                     </div>
                 `;
             });
 
             container.innerHTML = `
-                <button onclick="router('dashboard')" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> Retour aux Chapitres
+                <button onclick="router('dashboard')" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2 font-medium">
+                    <i class="fa-solid fa-arrow-left"></i> Retour au Programme
                 </button>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 space-y-8">
-                        <div class="glass-panel p-8 rounded-2xl">
+                        <div class="glass-panel p-10 rounded-2xl border-t-4 border-slate-200">
                             <h2 class="text-3xl font-serif font-bold text-slate-800 mb-6">${chap.title}</h2>
-                            <div class="prose text-slate-600 leading-relaxed">
+                            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed text-lg">
                                 ${chap.summary}
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-slate-800 mb-4">Zone d'Entraînement</h3>
+                            <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-teal-500"></i> Entraînement Avancé</h3>
                             <div class="grid gap-4">${gamesHtml}</div>
                         </div>
                     </div>
                     <div class="lg:col-span-1">
-                        <div class="glass-panel p-6 rounded-2xl sticky top-24">
-                            <div class="text-center mb-6">
-                                <div class="inline-block p-4 bg-teal-100 rounded-full text-teal-600 text-3xl mb-2"><i class="fa-solid fa-clipboard-question"></i></div>
-                                <h3 class="text-xl font-bold">Quiz du Chapitre</h3>
-                                <p class="text-sm text-slate-500">10 Questions</p>
+                        <div class="glass-panel p-8 rounded-2xl sticky top-24 border border-slate-200 bg-gradient-to-b from-white to-slate-50">
+                            <div class="text-center mb-8">
+                                <div class="inline-block p-4 bg-teal-50 rounded-full text-teal-600 text-4xl mb-4 shadow-inner"><i class="fa-solid fa-file-signature"></i></div>
+                                <h3 class="text-2xl font-bold text-slate-800">Certification</h3>
+                                <p class="text-sm text-slate-500 mt-2">10 Questions à choix multiples</p>
                             </div>
-                            <button onclick="router('quiz', ${id})" class="w-full bg-slate-900 text-white py-3 rounded-lg hover:bg-slate-800 transition font-bold">Commencer</button>
+                            <button onclick="router('quiz', ${id})" class="w-full bg-slate-900 text-white py-4 rounded-xl hover:bg-slate-800 transition font-bold text-lg shadow-lg hover:shadow-xl transform active:scale-95">
+                                Lancer le Quiz
+                            </button>
+                            <div class="mt-6 text-center">
+                                <span class="text-xs text-slate-400 uppercase tracking-widest">Exigence: 7/10</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- 5. GAME ENGINES (FIXED LOGIC) ---
+        // --- 5. GAME ENGINES (Fixed & Optimized) ---
 
         function renderGame(container, data) {
             const { chapterId, gameIndex } = data;
@@ -433,12 +668,14 @@
             const game = chap.games[gameIndex];
 
             container.innerHTML = `
-                <div class="max-w-4xl mx-auto">
-                    <button onclick="router('chapter', ${chapterId})" class="mb-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left"></i> Retour</button>
-                    <div class="glass-panel p-8 rounded-2xl fade-in">
-                        <div class="flex justify-between items-center mb-6">
+                <div class="max-w-5xl mx-auto">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2 font-medium">
+                        <i class="fa-solid fa-arrow-left"></i> Retour Chapitre
+                    </button>
+                    <div class="glass-panel p-8 rounded-2xl fade-in border-t-4 border-teal-500">
+                        <div class="flex justify-between items-center mb-8 border-b pb-4">
                             <h2 class="text-2xl font-bold text-slate-800">${game.title}</h2>
-                            <span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-xs font-bold uppercase">${game.type}</span>
+                            <span class="bg-slate-100 text-slate-600 px-4 py-2 rounded-lg font-bold uppercase tracking-wide text-xs">${game.type} Mode</span>
                         </div>
                         <div id="game-play-area"></div>
                     </div>
@@ -454,33 +691,18 @@
 
         // --- GAME: RELIEZ ---
         function launchMatchGame(container, game) {
-            // Init State
-            window.tempGameState = {
-                matches: 0,
-                total: game.pairs.length,
-                selectedLeft: null,
-                selectedRight: null
-            };
-
+            window.tempGameState = { matches: 0, total: game.pairs.length, selectedLeft: null, selectedRight: null };
             let lefts = game.pairs.map((p, i) => ({text: p.left, id: i, side: 'left'})).sort(() => Math.random() - 0.5);
             let rights = game.pairs.map((p, i) => ({text: p.right, id: i, side: 'right'})).sort(() => Math.random() - 0.5);
 
             const renderBoard = () => {
                 container.innerHTML = `
-                    <div class="grid grid-cols-2 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-3">
-                            ${lefts.map(item => `
-                                <div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 bg-slate-50 border border-slate-200 rounded text-center font-semibold text-slate-700 cursor-pointer">
-                                    ${item.text}
-                                </div>
-                            `).join('')}
+                            ${lefts.map(item => `<div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200">${item.text}</div>`).join('')}
                         </div>
                         <div class="space-y-3">
-                            ${rights.map(item => `
-                                <div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 bg-slate-50 border border-slate-200 rounded text-center font-semibold text-slate-700 cursor-pointer">
-                                    ${item.text}
-                                </div>
-                            `).join('')}
+                            ${rights.map(item => `<div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200">${item.text}</div>`).join('')}
                         </div>
                     </div>
                 `;
@@ -493,7 +715,6 @@
             if (el.classList.contains('matched')) return;
 
             if (window.tempGameState.selectedLeft && window.tempGameState.selectedRight) {
-                // Reset previous mismatch selection if clicking new
                 document.querySelectorAll('.game-card.selected').forEach(b => b.classList.remove('selected', 'wrong'));
                 window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
             }
@@ -505,19 +726,16 @@
 
             if (window.tempGameState.selectedLeft !== null && window.tempGameState.selectedRight !== null) {
                 if (window.tempGameState.selectedLeft === window.tempGameState.selectedRight) {
-                    // Match
                     document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.add('matched');
                     document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.add('matched');
                     document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.remove('selected');
                     document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.remove('selected');
                     window.tempGameState.matches++;
                     window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
-                    
                     if(window.tempGameState.matches === window.tempGameState.total) {
-                        container.innerHTML = `<div class="text-center text-green-600 font-bold text-xl py-8"><i class="fa-solid fa-trophy mb-4 text-3xl"></i><br>Trouvé ! Tous les couples.</div>`;
+                        setTimeout(() => container.innerHTML = `<div class="text-center text-green-600 font-bold text-2xl py-12 animate-bounce"><i class="fa-solid fa-check-circle mb-4"></i><br>Parfait !</div>`, 500);
                     }
                 } else {
-                    // Mismatch
                     document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.add('wrong');
                     document.getElementById(`r-${window.tempGameState.selectedRight}`).classList.add('wrong');
                     setTimeout(() => {
@@ -530,7 +748,6 @@
 
         // --- GAME: COMPLÉTEZ ---
         function launchFillGame(container, game, chapterId, gameIndex) {
-            // Init State
             window.tempGameState = {
                 words: [...game.words].sort(() => Math.random() - 0.5),
                 placedCount: 0,
@@ -538,35 +755,31 @@
                 chapterId: chapterId,
                 gameIndex: gameIndex
             };
-
             const slotCount = (game.text.match(/<u>_______<\/u>/g) || []).length;
-
+            
+            // Clean underscores for IDs
             container.innerHTML = `
-                <div class="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-lg leading-loose" id="fill-text">
-                    ${game.text.replace(/<u>_______<\/u>/g, () => `<span class="inline-block min-w-[100px] border-b-2 border-teal-500 text-center mx-1 px-2 text-teal-700 font-bold slot-item">?</span>`)}
+                <div class="mb-8 p-6 bg-slate-50 rounded-xl border border-slate-200 text-xl leading-loose shadow-inner" id="fill-text">
+                    ${game.text.replace(/<u>_______<\/u>/g, () => `<span class="inline-block min-w-[120px] border-b-4 border-teal-500 text-center mx-2 px-3 text-teal-800 font-bold slot-item cursor-pointer">?</span>`)}
                 </div>
-                <div class="flex flex-wrap gap-2 justify-center mb-4" id="word-bank">
-                    ${window.tempGameState.words.map((w, i) => `<button onclick="selectWord('${w}', ${i})" id="word-${i}" class="px-4 py-2 bg-white border border-slate-300 rounded shadow-sm hover:bg-teal-50 hover:border-teal-500 transition font-semibold text-slate-700">${w}</button>`).join('')}
+                <div class="flex flex-wrap gap-3 justify-center mb-6 p-4 bg-white rounded-xl border border-slate-200" id="word-bank">
+                    ${window.tempGameState.words.map((w, i) => `<button onclick="selectWord('${w}', ${i})" id="word-${i}" class="px-5 py-3 bg-white border border-slate-300 rounded-lg shadow-md hover:shadow-lg hover:bg-teal-50 hover:border-teal-500 transition font-bold text-slate-700">${w}</button>`).join('')}
                 </div>
-                <div class="text-center"><button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex}})" class="text-sm text-slate-400 underline">Réinitialiser</button></div>
+                <div class="text-center"><button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex}})" class="text-slate-400 hover:text-slate-600 underline">Réinitialiser</button></div>
             `;
         }
 
         window.selectWord = (word, btnIndex) => {
             const slots = document.querySelectorAll('.slot-item');
-            // Find first empty slot
             let targetSlot = null;
-            for(let s of slots) {
-                if(s.innerText === '?') { targetSlot = s; break; }
-            }
-
+            for(let s of slots) { if(s.innerText === '?') { targetSlot = s; break; } }
             if(targetSlot) {
                 targetSlot.innerText = word;
                 targetSlot.dataset.value = word;
+                targetSlot.classList.add('bg-teal-100');
                 const btn = document.getElementById(`word-${btnIndex}`);
                 btn.style.display = 'none';
                 window.tempGameState.placedCount++;
-                
                 if(window.tempGameState.placedCount === window.tempGameState.total) {
                     checkFillAnswer();
                 }
@@ -575,11 +788,15 @@
 
         function checkFillAnswer() {
             const slots = document.querySelectorAll('.slot-item');
-            // Check if all filled and match any word in list (simple check)
             const filled = Array.from(slots).every(s => s.innerText !== '?');
+            // Simple validation: Check if used words are exactly the initial list
+            const userWords = Array.from(slots).map(s => s.dataset.value).sort();
+            const originalWords = [...window.tempGameState.words].sort();
+            const isCorrect = JSON.stringify(userWords) === JSON.stringify(originalWords);
+            
             const feedbackDiv = document.createElement('div');
-            feedbackDiv.className = `mt-4 p-4 rounded-lg text-center font-bold text-white fade-in ${filled ? 'bg-green-500' : 'bg-red-500'}`;
-            feedbackDiv.innerText = filled ? "Correct ! Excellent travail." : "Erreur. Veuillez réessayer.";
+            feedbackDiv.className = `mt-6 p-6 rounded-xl text-center font-bold text-white text-xl fade-in ${isCorrect ? 'bg-green-600 shadow-xl' : 'bg-red-600'}`;
+            feedbackDiv.innerHTML = isCorrect ? "Excellent ! Syntaxe et terminologie parfaites." : "Erreur. Veuillez vérifier l'orthographe et le contexte.";
             document.getElementById('game-play-area').appendChild(feedbackDiv);
         }
 
@@ -588,24 +805,26 @@
             let items = [...game.items].sort(() => Math.random() - 0.5);
             
             container.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     ${game.categories.map(cat => `
-                        <div class="p-4 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 sort-zone" 
-                             ondragover="event.preventDefault()" 
+                        <div class="p-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 sort-zone min-h-[200px]" 
+                             data-cat="${cat}" 
+                             ondragover="event.preventDefault(); this.classList.add('drag-over')" 
+                             ondragleave="this.classList.remove('drag-over')"
                              ondrop="handleDrop(event, '${cat.replace(/'/g, "\\'")}')">
-                            <h4 class="font-bold text-center mb-4 text-slate-500 uppercase text-xs tracking-wider">${cat}</h4>
-                            <div class="space-y-2 min-h-[100px]" id="zone-${cat.replace(/\s/g,'')}"></div>
+                            <h4 class="font-bold text-center mb-6 text-slate-500 uppercase tracking-widest text-sm border-b pb-2">${cat}</h4>
+                            <div class="space-y-3 min-h-[100px]" id="zone-${cat.replace(/\s/g,'')}"></div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="mt-6 p-4 bg-white border border-slate-200 rounded-lg">
-                    <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">Éléments à trier (Glissez-les)</h4>
-                    <div class="flex flex-wrap gap-2" id="source-bank">
+                <div class="mt-8 p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <h4 class="font-bold text-sm text-slate-400 mb-4 uppercase tracking-widest text-center">Glissez les éléments ci-dessous vers les bonnes catégories</h4>
+                    <div class="flex flex-wrap gap-3 justify-center" id="source-bank">
                         ${items.map(item => `
                             <div draggable="true" 
                                  ondragstart="handleDrag(event, '${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
                                  id="drag-${item.text.replace(/\s/g,'')}" 
-                                 class="bg-teal-50 border border-teal-200 px-3 py-2 rounded text-teal-800 text-sm cursor-move hover:shadow-md select-none">
+                                 class="bg-white px-4 py-3 border border-slate-300 rounded-lg shadow-sm cursor-grab active:cursor-grabbing hover:border-teal-500 hover:shadow-md transition text-sm font-semibold text-slate-700 select-none">
                                 ${item.text}
                             </div>
                         `).join('')}
@@ -622,6 +841,7 @@
 
         window.handleDrop = (ev, targetCat) => {
             ev.preventDefault();
+            ev.currentTarget.classList.remove('drag-over');
             const text = ev.dataTransfer.getData("text");
             const correctCat = ev.dataTransfer.getData("cat");
             const elementId = ev.dataTransfer.getData("id");
@@ -631,18 +851,17 @@
             
             if (targetCat === correctCat) {
                 zone.appendChild(draggedEl);
-                draggedEl.classList.remove('cursor-move', 'hover:shadow-md');
-                draggedEl.classList.add('bg-green-100', 'border-green-500', 'text-green-800', 'cursor-default');
+                draggedEl.classList.remove('cursor-grab', 'hover:shadow-md', 'bg-white');
+                draggedEl.classList.add('bg-green-50', 'border-green-500', 'text-green-800', 'cursor-default', 'shadow-inner');
                 draggedEl.draggable = false;
             } else {
-                draggedEl.classList.add('animate-pulse', 'bg-red-100');
-                setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-100'), 500);
+                draggedEl.classList.add('animate-pulse', 'bg-red-50');
+                setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-50'), 500);
             }
         };
 
         // --- GAME: ORDRE (ORDER) ---
         function launchOrderGame(container, game) {
-            // Init State
             window.tempGameState = {
                 items: [...game.items].sort(() => Math.random() - 0.5),
                 selectedIndex: null,
@@ -650,22 +869,22 @@
             };
             
             container.innerHTML = `
-                <div class="flex gap-4 flex-col md:flex-row">
-                    <div class="flex-1 bg-white p-4 rounded-lg border border-slate-200">
-                        <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">À ordonner</h4>
-                        <div class="space-y-2" id="order-source">
+                <div class="flex gap-6 flex-col lg:flex-row">
+                    <div class="flex-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-sm text-slate-400 mb-4 uppercase tracking-widest">Éléments à ordonner</h4>
+                        <div class="space-y-3" id="order-source">
                             ${window.tempGameState.items.map((item, i) => `
-                                <div onclick="selectOrderItem(${i})" id="order-item-${i}" class="game-card p-3 bg-slate-50 border border-slate-200 rounded cursor-pointer hover:border-teal-500 hover:bg-teal-50">
+                                <div onclick="selectOrderItem(${i})" id="order-item-${i}" class="game-card p-4 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition font-medium">
                                     ${item}
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="flex-1 bg-slate-100 p-4 rounded-lg border-2 border-dashed border-slate-300">
-                        <h4 class="font-bold text-sm text-slate-500 mb-3 uppercase">Ordre Chronologique</h4>
-                        <div class="space-y-2" id="order-target">
+                    <div class="flex-1 bg-slate-100 p-6 rounded-xl border-2 border-dashed border-slate-300">
+                        <h4 class="font-bold text-sm text-slate-400 mb-4 uppercase tracking-widest text-center">Ordre Chronologique / Logique</h4>
+                        <div class="space-y-3" id="order-target">
                             ${game.items.map((_, i) => `
-                                <div onclick="placeOrderItem(${i})" class="min-h-[50px] bg-white border border-slate-200 rounded flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-50 transition">
+                                <div onclick="placeOrderItem(${i})" class="min-h-[60px] bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-50 hover:border-slate-400 transition font-bold">
                                     Étape ${i+1}
                                 </div>
                             `).join('')}
@@ -676,15 +895,13 @@
         }
 
         window.selectOrderItem = (index) => {
-            // Deselect previous
             if(window.tempGameState.selectedIndex !== null) {
                 const prev = document.getElementById(`order-item-${window.tempGameState.selectedIndex}`);
-                if(prev) prev.classList.remove('selected');
+                if(prev) prev.classList.remove('selected', 'ring-4', 'ring-teal-500', 'bg-teal-50');
             }
-            // Select new
             window.tempGameState.selectedIndex = index;
             const el = document.getElementById(`order-item-${index}`);
-            el.classList.add('selected');
+            el.classList.add('selected', 'ring-4', 'ring-teal-500', 'bg-teal-50', 'z-10');
         };
 
         window.placeOrderItem = (stepIndex) => {
@@ -696,28 +913,30 @@
             const targetSlot = targetSlots[stepIndex];
 
             if(selectedItemText === correctText) {
-                targetSlot.innerHTML = `<span class="text-green-700 font-bold"><i class="fa-solid fa-check mr-2"></i>${selectedItemText}</span>`;
-                targetSlot.classList.add('bg-green-50', 'border-green-500', 'cursor-default');
+                targetSlot.innerHTML = `<span class="text-green-700 font-bold text-lg"><i class="fa-solid fa-check-circle mr-2"></i>${selectedItemText}</span>`;
+                targetSlot.classList.remove('bg-white', 'border-dashed', 'text-slate-300', 'cursor-pointer', 'hover:bg-slate-50');
+                targetSlot.classList.add('bg-green-50', 'border-green-500', 'cursor-default', 'shadow-inner');
                 targetSlot.removeAttribute('onclick');
                 document.getElementById(`order-item-${window.tempGameState.selectedIndex}`).style.display = 'none';
                 window.tempGameState.placedCount++;
                 window.tempGameState.selectedIndex = null;
-                
                 if(window.tempGameState.placedCount === window.tempGameState.items.length) {
-                    setTimeout(() => alert("Ordre Correct !"), 300);
+                    setTimeout(() => {
+                        targetSlot.parentElement.parentElement.innerHTML = `<div class="h-64 flex items-center justify-center bg-green-50 rounded-xl text-green-600 text-2xl font-bold animate-pulse"><i class="fa-solid fa-trophy mb-2 text-4xl"></i><br>Ordre Correct !</div>`;
+                    }, 300);
                 }
             } else {
-                targetSlot.classList.add('animate-pulse', 'bg-red-50');
-                setTimeout(() => targetSlot.classList.remove('animate-pulse', 'bg-red-50'), 500);
+                targetSlot.classList.add('animate-pulse', 'bg-red-50', 'border-red-400');
+                setTimeout(() => targetSlot.classList.remove('animate-pulse', 'bg-red-50', 'border-red-400'), 500);
             }
         };
 
-        // --- 6. QUIZ ENGINE ---
+        // --- 6. QUIZ ENGINE (10 QUESTIONS HARD) ---
         function renderQuiz(container, chapterId) {
             const chap = CHAPTERS.find(c => c.id === chapterId);
             container.innerHTML = `
-                <div class="max-w-3xl mx-auto glass-panel p-8 rounded-2xl fade-in">
-                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+                <div class="max-w-3xl mx-auto glass-panel p-10 rounded-2xl fade-in border border-slate-200">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Abandonner</button>
                     <div id="quiz-content"></div>
                 </div>
             `;
@@ -730,11 +949,11 @@
                 appState.completedQuizzes.add(chap.id);
                 updateProgress();
                 content.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fa-solid fa-trophy text-6xl text-yellow-400 mb-6"></i>
-                        <h2 class="text-3xl font-bold text-slate-800 mb-4">Chapitre Terminé !</h2>
-                        <p class="text-slate-600 mb-6">Quiz validé pour "${chap.title}".</p>
-                        <button onclick="router('chapter', ${chap.id})" class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700">Continuer</button>
+                    <div class="text-center py-12">
+                        <div class="inline-block p-6 bg-green-100 rounded-full text-green-600 text-5xl mb-6 shadow-lg"><i class="fa-solid fa-award"></i></div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-4">Chapitre Validé !</h2>
+                        <p class="text-slate-600 mb-8">Vous avez démontré une maîtrise experte de "${chap.title}".</p>
+                        <button onclick="router('chapter', ${chap.id})" class="bg-teal-600 text-white px-8 py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg shadow-lg">Continuer</button>
                     </div>
                 `;
                 return;
@@ -742,11 +961,14 @@
 
             const q = chap.quiz[index];
             content.innerHTML = `
-                <div class="flex justify-between text-sm text-slate-400 mb-4"><span>Question ${index + 1} / 10</span></div>
-                <h3 class="text-xl font-bold text-slate-800 mb-6 leading-relaxed">${q.q}</h3>
-                <div class="space-y-3">
+                <div class="flex justify-between items-center mb-6 text-sm font-bold text-slate-400 uppercase tracking-wider">
+                    <span>Question ${index + 1} / 10</span>
+                    <span>Série: Expert</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-8 leading-relaxed">${q.q}</h3>
+                <div class="space-y-4">
                     ${q.options.map((opt, i) => `
-                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id})" class="w-full text-left p-4 border border-slate-200 rounded-lg hover:border-teal-400 hover:bg-teal-50 transition font-medium">
+                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id})" class="w-full text-left p-5 border border-slate-200 rounded-lg hover:border-teal-500 hover:bg-teal-50 transition font-medium text-slate-700 shadow-sm">
                             ${opt}
                         </button>
                     `).join('')}
@@ -759,7 +981,7 @@
                 appState.score += 10;
                 loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
             } else {
-                alert("Faux. Réessayez.");
+                alert("Incorrect. Consultez le cours et réessayez.");
             }
         };
 
