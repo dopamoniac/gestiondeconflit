@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,12 +19,19 @@
             theme: {
                 extend: {
                     colors: {
-                        slate: { 850: '#151f32', 900: '#0f172a' },
+                        slate: { 850: '#151f32', 900: '#0f172a', 950: '#020617' },
                         teal: { 450: '#2dd4bf', 600: '#0d9488' },
+                        cyber: {
+                            blue: '#00f3ff',
+                            pink: '#bc13fe',
+                            purple: '#7b2cbf',
+                            green: '#0aff00'
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         serif: ['Playfair Display', 'serif'],
+                        display: ['Orbitron', 'sans-serif']
                     }
                 }
             }
@@ -32,27 +39,55 @@
     </script>
 
     <style>
-        body { background-color: #f1f5f9; color: #1e293b; -webkit-tap-highlight-color: transparent; }
-        .glass-panel { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Intro Overlay Styles */
-        #dopaem-intro {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background-color: #0f172a; z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column;
-            transition: opacity 0.8s ease-out, visibility 0.8s;
+        /* --- FUTURISTIC THEME VARIABLES --- */
+        :root {
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff0099;
+            --neon-green: #0aff00;
         }
-        #dopaem-intro.hidden-intro {
-            opacity: 0; visibility: hidden; pointer-events: none;
+
+        body {
+            background-color: #020617; 
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%),
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px;
+            color: #f8fafc; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- GLASS PANELS (DARK MODE) --- */
+        .glass-panel { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px) saturate(180%); 
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 0 1px rgba(255,255,255,0.1); 
+        }
+
+        /* --- ANIMATIONS --- */
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        /* Intro Overlay */
+        #dopaem-intro {
+            background-color: #000; z-index: 9999;
+            background-image: 
+                radial-gradient(circle at center, #1a1a1a 0%, #000 100%),
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px;
         }
         .intro-text {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Orbitron', sans-serif;
             color: white;
             font-size: 3rem;
             letter-spacing: 2px;
+            text-shadow: 0 0 20px var(--neon-blue);
             animation: textReveal 1s ease-out forwards;
             opacity: 0;
             transform: translateY(20px);
@@ -61,74 +96,149 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Advanced Game Styles */
-        .game-card { transition: all 0.2s; user-select: none; border: 1px solid #cbd5e1; touch-action: manipulation; font-size: 0.85rem; }
-        .game-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        /* --- FUTURISTIC GAME UI --- */
+        .game-card { 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            user-select: none; 
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(30, 41, 59, 0.7); 
+            font-size: 0.85rem; 
+            position: relative;
+            overflow: hidden;
+        }
+        /* Futuristic scanline effect on hover */
+        .game-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+        .game-card:hover::before { transform: translateX(100%); }
+        
+        .game-card:hover { 
+            transform: translateY(-4px) scale(1.02); 
+            border-color: var(--neon-blue); 
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            background: rgba(30, 41, 59, 0.9);
+        }
         .game-card:active { transform: scale(0.98); }
-        .game-card.selected { ring: 3px; ring-color: #0f766e; background-color: #ccfbf1; border-color: #0f766e; transform: scale(1.02); z-index: 10; }
-        .game-card.matched { background-color: #dcfce7; border-color: #16a34a; color: #14532d; opacity: 0.7; pointer-events: none; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); }
-        .game-card.wrong { background-color: #fee2e2; border-color: #dc2626; animation: shakeHard 0.4s; }
-        @keyframes shakeHard { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
         
-        .sort-zone { min-height: 140px; transition: all 0.3s; }
-        .sort-zone.drag-over { background-color: #e0f2fe; border-color: #0ea5e9; transform: scale(1.01); }
+        .game-card.selected { 
+            background: rgba(13, 148, 136, 0.2); 
+            border: 1px solid var(--neon-blue); 
+            box-shadow: 0 0 15px var(--neon-blue), inset 0 0 10px rgba(13, 148, 136, 0.2);
+            transform: scale(1.05); 
+            z-index: 10; 
+        }
         
-        /* Mobile Optimization for Sort Items */
+        .game-card.matched { 
+            background: rgba(10, 167, 129, 0.1); 
+            border: 1px solid var(--neon-green); 
+            color: #f0fdf4; 
+            opacity: 0.5; 
+            pointer-events: none; 
+            box-shadow: inset 0 0 10px rgba(10, 167, 129, 0.1); 
+        }
+        
+        .game-card.wrong { 
+            background: rgba(220, 38, 38, 0.1); 
+            border: 1px solid var(--neon-pink); 
+            color: #fecdd3; 
+            animation: shakeHard 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shakeHard { 
+            10%, 90% { transform: translate3d(-1px, 0, 0); } 
+            20%, 80% { transform: translate3d(2px, 0, 0); } 
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
+            40%, 60% { transform: translate3d(4px, 0, 0); } 
+        }
+        
+        .sort-zone { 
+            min-height: 140px; 
+            transition: all 0.3s; 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        .sort-zone.drag-over { 
+            background: rgba(0, 243, 255, 0.05); 
+            border-color: var(--neon-blue); 
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1) inset; 
+        }
+        
         .draggable-item { touch-action: none; }
         .draggable-item.selected-tap {
-            background-color: #ccfbf1;
-            border-color: #0f766e;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--neon-blue);
+            color: white;
             transform: scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.4);
             z-index: 50;
         }
 
-        /* Fill Game Error State */
+        /* Fill Game Error State - Neon Red Pulse */
         .slot-item.wrong-slot {
-            background-color: #fee2e2;
-            border-color: #dc2626;
-            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--neon-pink);
+            color: #fca5a5;
             animation: pulseRed 1s infinite;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.4) inset;
         }
         @keyframes pulseRed {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); border-color: var(--neon-pink); }
+            70% { box-shadow: 0 0 10px 2px rgba(220, 38, 38, 0); border-color: #fff; }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); border-color: var(--neon-pink); }
         }
 
         /* --- NEW FUTURISTIC QUIZ STYLES --- */
         .quiz-option {
-            /* Glassmorphism & Futuristic Base */
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Dark Glass + Neon Border Base */
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        /* Holographic Hover */
         .quiz-option:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 10px 15px -3px rgba(45, 212, 191, 0.15);
-            border-color: #2dd4bf;
-            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-3px) scale(1.01);
+            border-color: var(--neon-blue);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
         }
 
-        /* Correct State - Green Glow */
+        /* Correct State - Neon Green Glow */
         .quiz-option.correct-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-color: transparent;
+            background: linear-gradient(135deg, #064e3b 0%, #00ff00 100%);
+            border: 1px solid var(--neon-green);
             color: white;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 30px var(--neon-green), inset 0 0 10px rgba(255, 255, 255, 0.5);
             transform: scale(1.02);
             pointer-events: none;
         }
+        .quiz-option.correct-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { opacity: 1; transform: scaleX(0); }
+            50% { opacity: 1; transform: scaleX(1); }
+            51% { opacity: 0; }
+            100% { opacity: 0; }
+        }
 
-        /* Wrong State - Red Shake */
+        /* Wrong State - Neon Pink Shake */
         .quiz-option.wrong-btn {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            border-color: transparent;
+            background: linear-gradient(135deg, #4a044e 0%, #bc13fe 100%);
+            border: 1px solid var(--neon-pink);
             color: white;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.6), inset 0 0 10px rgba(0,0,0,0.5);
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
 
@@ -138,6 +248,44 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+
+        /* --- BUTTONS (CYBERPUNK STYLE) --- */
+        .btn-cyber {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+        .btn-cyber:hover {
+            box-shadow: 0 0 30px var(--neon-blue), inset 0 0 10px rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+        .btn-cyber::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-cyber:hover::before { opacity: 1; }
+        
+        /* --- TEXT ADJUSTMENTS FOR DARK MODE --- */
+        h1, h2, h3, h4, p, span, div, li, ul, ol { color-scheme: dark; } /* Force dark mode colors */
+        .text-slate-800 { color: #f1f5f9; } /* Darkify headers */
+        .text-slate-900 { color: #ffffff; }
+        .text-slate-700 { color: #cbd5e1; } /* Body text */
+        .text-slate-600 { color: #94a3b8; } /* Subtitles */
+        .text-slate-500 { color: #64748b; } /* Hints */
+        .text-slate-400 { color: #4b5563; } /* Labels */
+        .text-teal-700 { color: #5eead4; } /* Highlights */
+        .text-teal-800 { color: #99f6e4; }
+        .text-teal-600 { color: #2dd4bf; }
+        
+        /* Glass specific text overrides */
+        .glass-panel * { color: #f8fafc; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -148,22 +296,22 @@
     </div>
 
     <!-- Navbar -->
-    <nav class="bg-slate-900 text-white p-4 shadow-xl sticky top-0 z-50 border-b border-slate-700">
+    <nav class="glass-panel text-white p-4 sticky top-0 z-50 border-b border-slate-700/30">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="router('dashboard')">
-                <div class="bg-slate-800 p-2 rounded-lg border border-slate-600">
-                    <i class="fa-solid fa-graduation-cap text-teal-400 text-xl"></i>
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="router('dashboard')">
+                <div class="bg-slate-800/50 p-2 rounded-lg border border-slate-600/50 group-hover:border-cyber-blue transition-colors">
+                    <i class="fa-solid fa-graduation-cap text-cyber-blue text-xl drop-shadow-[0_0_10px_rgba(0,243,255,0.8)]"></i>
                 </div>
                 <div>
-                    <h1 class="font-serif text-lg font-bold tracking-wide">Gestion Conflits & Négociation</h1>
-                    <p class="text-xs text-slate-400 font-medium">Niveau Expert (6 Chapitres)</p>
+                    <h1 class="font-serif text-lg font-bold tracking-wide text-white group-hover:text-cyber-blue transition-colors">Gestion Conflits </h1>
+                    <p class="text-xs text-slate-400 font-medium">6 Chapitres de cours</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
-                    <div class="text-[10px] text-slate-400 uppercase tracking-widest">Mastery Level</div>
-                    <div class="w-40 h-2 bg-slate-800 rounded-full mt-1 overflow-hidden border border-slate-700">
-                        <div id="global-progress" class="h-full bg-gradient-to-r from-teal-400 to-teal-600 w-0 transition-all duration-1000 shadow-[0_0_10px_rgba(45,212,191,0.5)]"></div>
+                    <div class="text-[10px] text-cyber-blue uppercase tracking-widest font-display">Mastery Level</div>
+                    <div class="w-40 h-2 bg-slate-800 rounded-full mt-1 overflow-hidden border border-slate-600/50 shadow-inner">
+                        <div id="global-progress" class="h-full bg-gradient-to-r from-cyber-blue to-cyber-purple w-0 transition-all duration-1000 shadow-[0_0_10px_rgba(0,243,255,1)]"></div>
                     </div>
                 </div>
             </div>
@@ -175,8 +323,8 @@
         <!-- Dynamic Content -->
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
-        <div class="text-center text-slate-400 text-xs">
+    <footer class="glass-panel mt-auto py-6 border-t border-slate-700/30">
+        <div class="text-center text-slate-500 text-xs">
             Formation Avancée basée sur le cours Gestion de conflits.
         </div>
     </footer>
@@ -191,48 +339,48 @@
                 title: "Chapitre 1 : Enjeux, Niveaux & Sources",
                 icon: "fa-cubes",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-teal-700 border-b pb-2">Essence, Enjeux et Structure</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-cyber-blue border-b border-slate-700/30 pb-2">Essence, Enjeux et Structure</h3>
                     
-                    <p class="mb-4"><strong>Hellriegel et al., 1992 :</strong> Situation d'opposition entre individus ayant des objectifs, cognitions ou émotions incompatibles.</p>
+                    <p class="mb-4"><strong class="text-cyber-purple">Hellriegel et al., 1992 :</strong> Situation d'opposition entre individus ayant des objectifs, cognitions ou émotions incompatibles.</p>
 
-                    <div class="bg-blue-50 p-4 rounded-lg mb-6 border-l-4 border-blue-600 shadow-sm">
-                        <h4 class="font-bold text-blue-900 mb-2 text-sm">Distinction : Problème vs Conflit</h4>
-                        <ul class="list-disc list-inside text-blue-800 space-y-1 text-xs">
+                    <div class="bg-blue-500/10 p-4 rounded-lg mb-6 border-l-4 border-cyber-blue shadow-[0_0_15px_rgba(0,243,255,0.2)]">
+                        <h4 class="font-bold text-cyber-blue mb-2 text-sm">Distinction : Problème vs Conflit</h4>
+                        <ul class="list-disc list-inside text-blue-200 space-y-1 text-xs">
                             <li><strong>Problème :</strong> Rationnel, mesurable, observable (Ex: Machine cassée).</li>
                             <li><strong>Conflit :</strong> Émotionnel, opposition, heurt (Ex: Accumulation d'insatisfactions).</li>
                         </ul>
                     </div>
 
-                    <h4 class="font-bold mb-2 text-slate-800">1. Les Enjeux (Types de Conflits)</h4>
+                    <h4 class="font-bold mb-2 text-white">1. Les Enjeux (Types de Conflits)</h4>
                     <p class="text-xs text-slate-500 mb-2">Selon la nature des intérêts en jeu :</p>
-                    <ul class="list-disc list-inside mb-4 text-slate-700 text-sm">
+                    <ul class="list-disc list-inside mb-4 text-slate-300 text-sm">
                         <li><strong>Mécaniques :</strong> Enjeux physiques et matériels (argent, espace, équipement).</li>
                         <li><strong>Sociaux Émotionnels :</strong> Enjeu lié à l'identité de l'une des parties.</li>
                         <li><strong>D'intérêts :</strong> Différence d'aspirations, de points de vue ou d'opinions.</li>
                     </ul>
 
-                    <h4 class="font-bold mb-2 text-slate-800">2. Les Niveaux de Conflit (Complet)</h4>
+                    <h4 class="font-bold mb-2 text-white">2. Les Niveaux de Conflit (Complet)</h4>
                     <p class="text-xs text-slate-500 mb-2">L'opposition se manifeste à différentes échelles :</p>
-                    <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm mb-4">
-                        <ul class="list-disc list-inside text-slate-700 space-y-2 text-sm">
+                    <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700/30 shadow-sm mb-4 backdrop-blur-sm">
+                        <ul class="list-disc list-inside text-slate-300 space-y-2 text-sm">
                             <li><strong>Intrapersonnel :</strong> Déchirement intérieur face à un choix.</li>
                             <li><strong>Interpersonnel :</strong> Opposition entre deux individus isolés.</li>
                             <li><strong>Intragroupe :</strong> Tensions au sein d'une même équipe.</li>
                             <li><strong>Intergroupe :</strong> Conflit entre deux groupes de l'organisation.</li>
-                            <li class="bg-teal-50 p-2 rounded"><strong class="text-teal-800">Intra-organisationnel :</strong> <br><span class="text-xs">Provient des heurts suscités par l'organisation de l'entreprise.</span>
+                            <li class="bg-teal-900/20 p-2 rounded border border-teal-500/30"><strong class="text-cyber-blue">Intra-organisationnel :</strong> <br><span class="text-xs">Provient des heurts suscités par l'organisation de l'entreprise.</span>
                                 <ul class="list-none mt-1 ml-4 text-xs space-y-1">
                                     <li>• <strong>Vertical :</strong> Entre niveaux hiérarchiques différents.</li>
                                     <li>• <strong>Horizontal :</strong> Entre employés du même niveau hiérarchique.</li>
                                     <li>• <strong>Staff/Line :</strong> Entre spécialistes et opérationnels.</li>
                                 </ul>
                             </li>
-                            <li><strong class="text-red-700">Inter-organisationnel :</strong> <br><span class="text-xs">Oppose deux organisations ou davantage (ex: Entreprises concurrentes, Fournisseurs).</span></li>
+                            <li><strong class="text-cyber-pink">Inter-organisationnel :</strong> <br><span class="text-xs">Oppose deux organisations ou davantage (ex: Entreprises concurrentes, Fournisseurs).</span></li>
                         </ul>
                     </div>
 
-                    <h4 class="font-bold mb-2 text-slate-800">3. Les Sources de Conflit</h4>
+                    <h4 class="font-bold mb-2 text-white">3. Les Sources de Conflit</h4>
                     <p class="text-xs text-slate-500 mb-2">Facteurs déclencheurs :</p>
-                    <ul class="list-disc list-inside text-slate-700 text-sm">
+                    <ul class="list-disc list-inside text-slate-300 text-sm">
                         <li><strong>Informationnelles :</strong> Manque d'info ou différence de perception.</li>
                         <li><strong>Relationnelles :</strong> Incompatibilité, personnalité.</li>
                         <li><strong>Factuelles :</strong> Rôles mal définis, objectifs flous.</li>
@@ -243,7 +391,7 @@
                 games: [
                     {
                         type: "match",
-                        title: "Jeu 1: Niveaux & Enjeux (Hard)",
+                        title: "Jeu 1: Niveaux & Enjeux ",
                         pairs: [
                             { left: "Enjeu Mécanique", right: "Répartition des moyens (argent, espace)" },
                             { left: "Conflit Horizontal", right: "Oppose des unités du même niveau hiérarchique" },
@@ -319,12 +467,12 @@
                 title: "Chapitre 2 : Dynamique & Gestion du Cycle",
                 icon: "fa-chart-line",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-purple-700 border-b pb-2">Anatomie & Cycle du Conflit</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-cyber-purple border-b border-slate-700/30 pb-2">Anatomie & Cycle du Conflit</h3>
                     <p class="mb-4">Le conflit n'est pas isolé, il fait partie d'un réseau. L'analyse doit dépasser les apparences.</p>
                     
-                    <div class="bg-orange-50 p-5 rounded-lg border-l-4 border-orange-500 mb-6">
-                        <h4 class="font-bold text-orange-900 mb-2">Le Cycle de Vie (4 Phases)</h4>
-                        <ol class="list-decimal list-inside text-orange-800 space-y-1 text-sm">
+                    <div class="bg-orange-500/10 p-5 rounded-lg border-l-4 border-orange-500/50 mb-6 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+                        <h4 class="font-bold text-orange-400 mb-2">Le Cycle de Vie (4 Phases)</h4>
+                        <ol class="list-decimal list-inside text-orange-200 space-y-1 text-sm">
                             <li><strong>Gestation :</strong> Naissance, latence, première période.</li>
                             <li><strong>Amplification :</strong> Cristallisation, massification des acteurs, conscience partagée.</li>
                             <li><strong>Manifestation :</strong> Mise à nu, éclatement, durée variable.</li>
@@ -332,9 +480,9 @@
                         </ol>
                     </div>
 
-                    <h4 class="font-bold mb-2">Interventions du Gestionnaire</h4>
+                    <h4 class="font-bold mb-2 text-white">Interventions du Gestionnaire</h4>
                     <p class="text-sm text-slate-600 mb-2">La variable temps est cruciale. Deux approches :</p>
-                    <ul class="list-disc list-inside mb-4 text-slate-700 text-sm">
+                    <ul class="list-disc list-inside mb-4 text-slate-300 text-sm">
                         <li><strong>Prolongation :</strong> En manifestation pour découvrir d'autres tensions; en déclin pour convaincre.</li>
                         <li><strong>Écourtement :</strong> En amplification pour éviter massification; en déclin pour éviter l'enlisement.</li>
                     </ul>
@@ -404,29 +552,29 @@
                 title: "Chapitre 3 : Psychologie & Triangle de Karpman",
                 icon: "fa-masks-theater",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-red-700 border-b pb-2">Le Triangle Dramatique & Dynamique</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-cyber-pink border-b border-slate-700/30 pb-2">Le Triangle Dramatique & Dynamique</h3>
                     <p class="mb-6">Analyse transactionnelle (Karpman, 1968) expliquant les jeux psychologiques stériles qui bloquent la communication.</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-red-50 p-4 rounded-lg border border-red-200 text-center">
-                            <i class="fa-solid fa-skull text-2xl text-red-500 mb-2"></i>
-                            <strong class="block text-red-900">Persécuteur</strong>
-                            <p class="text-xs text-red-700 mt-1">Règles irréalistes, agressivité, s'en prend aux faibles.</p>
+                        <div class="bg-red-500/10 p-4 rounded-lg border border-red-500/20 text-center shadow-[0_0_15px_rgba(220,38,38,0.2)]">
+                            <i class="fa-solid fa-skull text-2xl text-red-400 mb-2"></i>
+                            <strong class="block text-red-300">Persécuteur</strong>
+                            <p class="text-xs text-red-400 mt-1">Règles irréalistes, agressivité, s'en prend aux faibles.</p>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
-                            <i class="fa-solid fa-life-ring text-2xl text-blue-500 mb-2"></i>
-                            <strong class="block text-blue-900">Sauveteur</strong>
-                            <p class="text-xs text-blue-700 mt-1">Faux serviable, maintient l'autre en dépendance.</p>
+                        <div class="bg-blue-500/10 p-4 rounded-lg border border-blue-500/20 text-center shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                            <i class="fa-solid fa-life-ring text-2xl text-blue-400 mb-2"></i>
+                            <strong class="block text-blue-300">Sauveteur</strong>
+                            <p class="text-xs text-blue-400 mt-1">Faux serviable, maintient l'autre en dépendance.</p>
                         </div>
-                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
-                            <i class="fa-solid fa-user-injured text-2xl text-yellow-600 mb-2"></i>
-                            <strong class="block text-yellow-900">Victime</strong>
-                            <p class="text-xs text-yellow-700 mt-1">Incapable, cherche la pitié ou se rebelle.</p>
+                        <div class="bg-yellow-500/10 p-4 rounded-lg border border-yellow-500/20 text-center shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                            <i class="fa-solid fa-user-injured text-2xl text-yellow-400 mb-2"></i>
+                            <strong class="block text-yellow-300">Victime</strong>
+                            <p class="text-xs text-yellow-400 mt-1">Incapable, cherche la pitié ou se rebelle.</p>
                         </div>
                     </div>
 
-                    <h4 class="font-bold mb-2">Sortir du Triangle :</h4>
-                    <p class="text-sm text-slate-700">Adopter le rôle d'<strong>Adulte Neutre</strong> : Rationnel, assertif, prendre du recul, ne pas entrer dans le jeu. Donner des 'strokes' positifs.</p>
+                    <h4 class="font-bold mb-2 text-white">Sortir du Triangle :</h4>
+                    <p class="text-sm text-slate-300">Adopter le rôle d'<strong>Adulte Neutre</strong> : Rationnel, assertif, prendre du recul, ne pas entrer dans le jeu. Donner des 'strokes' positifs.</p>
                 `,
                 games: [
                     {
@@ -494,24 +642,24 @@
                 title: "Chapitre 4 : Gestion RH & Discipline",
                 icon: "fa-user-tie",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-slate-700 border-b pb-2">Intervention & Cadre Juridique</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-white border-b border-slate-700/30 pb-2">Intervention & Cadre Juridique</h3>
                     <p class="mb-4">Distinction cruciale : Difficile (Volontaire) vs En Difficulté (Compétence/Motivation).</p>
                     
                     <h4 class="font-bold mb-2 text-red-600">Gradation des Sanctions (Article 2088 C.c.Q)</h4>
-                    <p class="text-sm text-slate-600 mb-2">Le salarié doit travailler avec <strong>prudence et diligence</strong>. En cas de manquement volontaire : Mesures disciplinaires. En cas de manquement involontaire : Mesures administratives.</p>
+                    <p class="text-sm text-slate-300 mb-2">Le salarié doit travailler avec <strong>prudence et diligence</strong>. En cas de manquement volontaire : Mesures disciplinaires. En cas de manquement involontaire : Mesures administratives.</p>
                     <div class="flex flex-wrap gap-2 mb-4 text-xs">
-                        <span class="bg-white border px-2 py-1 rounded">1. Réprimande verbale</span>
-                        <span class="text-slate-400">→</span>
-                        <span class="bg-white border px-2 py-1 rounded">2. Avertissement écrit</span>
-                        <span class="text-slate-400">→</span>
-                        <span class="bg-white border px-2 py-1 rounded">3. Suspension (courte)</span>
-                        <span class="text-slate-400">→</span>
-                        <span class="bg-white border px-2 py-1 rounded">4. Suspension (longue)</span>
-                        <span class="text-slate-400">→</span>
-                        <span class="bg-white border px-2 py-1 rounded">5. Congédiement</span>
+                        <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">1. Réprimande verbale</span>
+                        <span class="text-slate-600">→</span>
+                        <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">2. Avertissement écrit</span>
+                        <span class="text-slate-600">→</span>
+                        <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">3. Suspension (courte)</span>
+                        <span class="text-slate-600">→</span>
+                        <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">4. Suspension (longue)</span>
+                        <span class="text-slate-600">→</span>
+                        <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">5. Congédiement</span>
                     </div>
-                    <h4 class="font-bold mb-2">Faute Grave :</h4>
-                    <p class="text-sm text-slate-600">Vol, fraude, violence, agissements criminels. La gradation <strong>ne s'applique pas</strong>.</p>
+                    <h4 class="font-bold mb-2 text-red-600">Faute Grave :</h4>
+                    <p class="text-sm text-slate-300">Vol, fraude, violence, agissements criminels. La gradation <strong>ne s'applique pas</strong>.</p>
                 `,
                 games: [
                     {
@@ -579,20 +727,20 @@
                 title: "Chapitre 5 : Stratégies de Négociation",
                 icon: "fa-chess",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-teal-700 border-b pb-2">Théorie & Stratégie</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-cyber-blue border-b border-slate-700/30 pb-2">Théorie & Stratégie</h3>
                     <p class="mb-4">La négociation est un processus de décision interdépendant visant un accord non-violent. Elle combine compromis et coopération.</p>
                     
-                    <div class="bg-indigo-50 p-4 rounded-lg mb-6 border-l-4 border-indigo-500">
-                        <h4 class="font-bold text-indigo-900">Les Déterminants du Choix Stratégique</h4>
-                        <ul class="list-disc list-inside text-indigo-800 space-y-1 text-sm">
+                    <div class="bg-indigo-500/10 p-4 rounded-lg border-l-4 border-cyber-blue mb-6 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                        <h4 class="font-bold text-cyber-blue mb-2">Les Déterminants du Choix Stratégique</h4>
+                        <ul class="list-disc list-inside text-indigo-200 space-y-1 text-sm">
                             <li><strong>Rapport de force :</strong> Déséquilibré → Attitude conflictuelle de la partie dominante.</li>
                             <li><strong>Pression des buts :</strong> Forte intensité → Nécessité d'être coopératif.</li>
                             <li><strong>Nature des points :</strong> Mixtes (Intégratifs/Distributifs) → Dépend du tournant de la négociation.</li>
                         </ul>
                     </div>
 
-                    <h4 class="font-bold mb-2">Types de Stratégies :</h4>
-                    <ul class="list-disc list-inside text-slate-700 mb-4 text-sm">
+                    <h4 class="font-bold mb-2 text-white">Types de Stratégies :</h4>
+                    <ul class="list-disc list-inside text-slate-300 mb-4 text-sm">
                         <li><strong>Intégrative (Gagnant-Gagnant) :</strong> L'autre est un partenaire. Recherche de solutions créatives.</li>
                         <li><strong>Distributive (Gagnant-Perdant) :</strong> L'autre est un adversaire. Utilisation de la force.</li>
                     </ul>
@@ -660,26 +808,26 @@
             },
             {
                 id: 6,
-                title: "Chapitre 6 : Techniques & ZAP (Hard)",
+                title: "Chapitre 6 : Techniques & ZAP ",
                 icon: "fa-cogs",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-indigo-700 border-b pb-2">Techniques Majeures & ZAP</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-indigo-400 border-b border-slate-700/30 pb-2">Techniques Majeures & ZAP</h3>
                     <p class="mb-4">La Zone d'Accord Possible (ZAP) est cruciale pour un win-win.</p>
                     
-                    <div class="bg-indigo-50 p-4 rounded-lg mb-6 border-l-4 border-indigo-500">
-                        <h4 class="font-bold text-indigo-900">Calcul de la ZAP</h4>
-                        <p class="text-sm text-indigo-800">ZAP Existe si : <strong>Max(Position De Repli A, Position De Repli B)</strong> < <strong>Min(Position Affichée A, Position Affichée B)</strong></p>
+                    <div class="bg-indigo-500/10 p-4 rounded-lg border-l-4 border-cyber-blue mb-6 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                        <h4 class="font-bold text-cyber-blue mb-2">Calcul de la ZAP</h4>
+                        <p class="text-sm text-indigo-200">ZAP Existe si : <strong>Max(Position De Repli A, Position De Repli B)</strong> < <strong>Min(Position Affichée A, Position Affichée B)</strong></p>
                     </div>
 
-                    <h4 class="font-bold mb-2">Techniques Majeures :</h4>
-                    <ul class="list-disc list-inside text-slate-700 mb-4 text-sm">
+                    <h4 class="font-bold mb-2 text-white">Techniques Majeures :</h4>
+                    <ul class="list-disc list-inside text-slate-300 mb-4 text-sm">
                         <li><strong>Salami (Point par point) :</strong> Diviser les difficultés.</li>
                         <li><strong>Paquet (Donnant-donnant) :</strong> Échange global de concessions.</li>
                         <li><strong>Faux Pivot :</strong> Prétention factice pour obtenir une vraie concession.</li>
                         <li><strong>Élargissement :</strong> Ajouter des clauses pour sortir d'une impasse.</li>
                     </ul>
-                    <h4 class="font-bold mb-2">Techniques Secondaires :</h4>
-                    <p class="text-sm text-slate-600">Globalisation, Bilan, Les Quatre Marches.</p>
+                    <h4 class="font-bold mb-2 text-slate-500">Techniques Secondaires :</h4>
+                    <p class="text-sm text-slate-400">Globalisation, Bilan, Les Quatre Marches.</p>
                 `,
                 games: [
                     {
@@ -795,7 +943,7 @@
                 // Last game -> Go to Quiz
                 return `
                     <div class="mt-6 text-center fade-in">
-                        <button onclick="router('quiz', ${chapterId})" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
+                        <button onclick="router('quiz', ${chapterId})" class="btn-cyber text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
                             Passer au Quiz <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -804,7 +952,7 @@
                 // Next Game
                 return `
                     <div class="mt-6 text-center fade-in">
-                        <button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex + 1}})" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
+                        <button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex + 1}})" class="btn-cyber text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
                             Jeu Suivant <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -817,25 +965,25 @@
         function renderDashboard(container) {
             let html = `
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-serif font-bold text-slate-900 mb-4">Programme de cous (Gestion de conflit)</h2>
-                    <p class="text-slate-500">6 Chapitres - Jeux Niveau Expert - Quiz 20 Questions</p>
+                    <h2 class="text-4xl font-display font-bold text-white mb-4 tracking-wider drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">Programme de cous (Gestion de conflit)</h2>
+                    <p class="text-slate-400">6 Chapitres - Jeux Niveau Expert - Quiz 20 Questions</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             `;
             CHAPTERS.forEach(chap => {
                 const isComplete = appState.completedQuizzes.has(chap.id);
                 html += `
-                    <div onclick="router('chapter', ${chap.id})" class="glass-panel p-6 rounded-2xl cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-t-4 ${isComplete ? 'border-green-500 bg-green-50/50' : 'border-teal-600'}">
+                    <div onclick="router('chapter', ${chap.id})" class="glass-panel p-6 rounded-2xl cursor-pointer hover:shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:-translate-y-2 transition-all duration-300 border-t-4 ${isComplete ? 'border-cyber-green bg-cyber-green/10' : 'border-cyber-blue'}">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-slate-100 rounded-lg text-slate-600">
-                                <i class="fa-solid ${chap.icon} text-2xl"></i>
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/30 group-hover:border-cyber-blue transition-colors">
+                                <i class="fa-solid ${chap.icon} text-2xl drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]"></i>
                             </div>
-                            ${isComplete ? '<div class="bg-green-500 text-white p-2 rounded-full shadow-lg"><i class="fa-solid fa-check"></i></div>' : ''}
+                            ${isComplete ? '<div class="bg-cyber-green text-black p-2 rounded-full shadow-lg"><i class="fa-solid fa-check"></i></div>' : ''}
                         </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2 leading-tight">${chap.title}</h3>
+                        <h3 class="text-xl font-bold text-slate-100 mb-2 leading-tight">${chap.title}</h3>
                         <div class="flex gap-2 mt-3 text-xs text-slate-500">
-                            <span class="bg-slate-100 px-2 py-1 rounded font-semibold">4 Jeux</span>
-                            <span class="bg-slate-100 px-2 py-1 rounded font-semibold">20 Quiz</span>
+                            <span class="bg-slate-900/80 border border-slate-700/30 px-2 py-1 rounded font-semibold text-cyber-blue">4 Jeux</span>
+                            <span class="bg-slate-900/80 border border-slate-700/30 px-2 py-1 rounded font-semibold text-cyber-purple">20 Quiz</span>
                         </div>
                     </div>
                 `;
@@ -856,42 +1004,42 @@
                 if(g.type === 'order') icon = 'fa-list-ol';
                 
                 gamesHtml += `
-                    <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-white p-5 rounded-xl shadow-sm hover:shadow-md cursor-pointer border-l-4 border-slate-300 hover:border-teal-500 transition flex justify-between items-center group">
+                    <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-slate-900/30 p-5 rounded-xl shadow-sm hover:shadow-lg hover:bg-slate-800/50 cursor-pointer border-l-4 border-slate-700/30 hover:border-cyber-blue transition flex justify-between items-center group">
                         <div>
-                            <h4 class="font-bold text-slate-700 group-hover:text-teal-700 transition">${g.title}</h4>
-                            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">Niveau: Expert • ${g.type}</p>
+                            <h4 class="font-bold text-slate-200 group-hover:text-cyber-blue transition">${g.title}</h4>
+                            <p class="text-xs text-slate-500 mt-1 uppercase tracking-wide">Niveau: Expert • ${g.type}</p>
                         </div>
-                        <div class="text-slate-300 group-hover:text-teal-500 transition"><i class="fa-solid ${icon} text-xl"></i></div>
+                        <div class="text-slate-600 group-hover:text-cyber-blue transition"><i class="fa-solid ${icon} text-xl"></i></div>
                     </div>
                 `;
             });
 
             container.innerHTML = `
-                <button onclick="router('dashboard')" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2 font-medium">
+                <button onclick="router('dashboard')" class="mb-6 text-slate-400 hover:text-white flex items-center gap-2 font-medium">
                     <i class="fa-solid fa-arrow-left"></i> Retour au Programme
                 </button>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 space-y-8">
-                        <div class="glass-panel p-6 md:p-10 rounded-2xl border-t-4 border-slate-200">
-                            <h2 class="text-2xl md:text-3xl font-serif font-bold text-slate-800 mb-6">${chap.title}</h2>
-                            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed text-base md:text-lg">
+                        <div class="glass-panel p-6 md:p-10 rounded-2xl border-t-4 border-slate-700/30">
+                            <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-6">${chap.title}</h2>
+                            <div class="prose prose-slate max-w-none text-slate-300 leading-relaxed text-base md:text-lg">
                                 ${chap.summary}
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-teal-500"></i> Entraînement Avancé (Hard)</h3>
+                            <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-cyber-blue drop-shadow-[0_0_10px_rgba(0,243,255,0.6)]"></i> Entraînement Avancé (Hard)</h3>
                             <div class="grid gap-4">${gamesHtml}</div>
                         </div>
                     </div>
                     <div class="lg:col-span-1">
-                        <div class="glass-panel p-6 md:p-8 rounded-2xl sticky top-24 border border-slate-200 bg-gradient-to-b from-white to-slate-50">
+                        <div class="glass-panel p-6 md:p-8 rounded-2xl sticky top-24 border border-slate-700/30 bg-gradient-to-b from-transparent to-slate-900/50">
                             <div class="text-center mb-6 md:mb-8">
-                                <div class="inline-block p-4 bg-teal-50 rounded-full text-teal-600 text-3xl md:text-4xl mb-4 shadow-inner"><i class="fa-solid fa-file-signature"></i></div>
-                                <h3 class="text-xl md:text-2xl font-bold text-slate-800">Certification</h3>
+                                <div class="inline-block p-4 bg-cyber-blue/10 rounded-full text-cyber-blue text-3xl md:text-4xl mb-4 shadow-[0_0_15px_rgba(0,243,255,0.3)] border border-cyber-blue"><i class="fa-solid fa-file-signature"></i></div>
+                                <h3 class="text-xl md:text-2xl font-display font-bold text-white">Certification</h3>
                                 <p class="text-xs md:text-sm text-slate-500 mt-2">20 Questions à choix multiples</p>
                             </div>
-                            <button onclick="router('quiz', ${id})" class="w-full bg-slate-900 text-white py-3 md:py-4 rounded-xl hover:bg-slate-800 transition font-bold text-base md:text-lg shadow-lg hover:shadow-xl transform active:scale-95">
+                            <button onclick="router('quiz', ${id})" class="btn-cyber w-full text-white py-3 md:py-4 rounded-xl font-bold text-base md:text-lg shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:scale-105 transition-transform">
                                 Lancer le Quiz
                             </button>
                             <div class="mt-4 md:mt-6 text-center">
@@ -912,13 +1060,13 @@
 
             container.innerHTML = `
                 <div class="max-w-5xl mx-auto">
-                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2 font-medium">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-white flex items-center gap-2 font-medium">
                         <i class="fa-solid fa-arrow-left"></i> Retour Chapitre
                     </button>
-                    <div class="glass-panel p-4 md:p-8 rounded-2xl fade-in border-t-4 border-teal-500">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-8 border-b pb-4 gap-4">
-                            <h2 class="text-lg md:text-2xl font-bold text-slate-800">${game.title}</h2>
-                            <span class="bg-slate-100 text-slate-600 px-4 py-2 rounded-lg font-bold uppercase tracking-wide text-xs whitespace-nowrap">${game.type} Mode</span>
+                    <div class="glass-panel p-4 md:p-8 rounded-2xl fade-in border-t-4 border-cyber-blue shadow-[0_0_30px_rgba(0,243,255,0.3)]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-8 border-b border-slate-700/30 pb-4 gap-4">
+                            <h2 class="text-lg md:text-2xl font-bold text-white">${game.title}</h2>
+                            <span class="bg-slate-900/80 text-cyber-blue px-4 py-2 rounded-lg font-bold uppercase tracking-wide text-xs whitespace-nowrap border border-slate-700/30 shadow-inner">${game.type} Mode</span>
                         </div>
                         <div id="game-play-area"></div>
                     </div>
@@ -942,15 +1090,15 @@
                 container.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                         <div>
-                            <h4 class="text-center font-bold text-slate-500 mb-3 uppercase text-xs tracking-widest">Éléments</h4>
+                            <h4 class="text-center font-bold text-cyber-blue mb-3 uppercase text-xs tracking-widest">Éléments</h4>
                             <div class="space-y-2 md:space-y-3">
-                                ${lefts.map(item => `<div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                                ${lefts.map(item => `<div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 md:p-4 rounded-lg text-center font-semibold text-slate-100 cursor-pointer shadow-sm border border-slate-700/30 text-xs md:text-base">${item.text}</div>`).join('')}
                             </div>
                         </div>
                         <div>
-                            <h4 class="text-center font-bold text-slate-500 mb-3 uppercase text-xs tracking-widest">Définitions</h4>
+                            <h4 class="text-center font-bold text-cyber-blue mb-3 uppercase text-xs tracking-widest">Définitions</h4>
                             <div class="space-y-2 md:space-y-3">
-                                ${rights.map(item => `<div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                                ${rights.map(item => `<div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 md:p-4 rounded-lg text-center font-semibold text-slate-100 cursor-pointer shadow-sm border border-slate-700/30 text-xs md:text-base">${item.text}</div>`).join('')}
                             </div>
                         </div>
                     </div>
@@ -986,7 +1134,7 @@
                         const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
                         setTimeout(() => {
                             container.innerHTML = `
-                                <div class="text-center text-green-600 font-bold text-xl md:text-2xl py-8 md:py-12 animate-bounce fade-in"><i class="fa-solid fa-check-circle mb-4"></i><br>Parfait !</div>
+                                <div class="text-center text-cyber-green font-bold text-xl md:text-2xl py-8 md:py-12 animate-bounce fade-in drop-shadow-[0_0_20px_rgba(10,255,0,1)]"><i class="fa-solid fa-check-circle mb-4"></i><br>Parfait !</div>
                                 ${nextBtn}
                             `;
                         }, 500);
@@ -1014,13 +1162,13 @@
             };
             
             container.innerHTML = `
-                <div class="mb-6 md:mb-8 p-4 md:p-6 bg-slate-50 rounded-xl border border-slate-200 text-base md:text-xl leading-loose shadow-inner" id="fill-text">
-                    ${game.text.replace(/<u>_______<\/u>/g, () => `<span class="inline-block min-w-[90px] md:min-w-[120px] border-b-4 border-teal-500 text-center mx-1 px-2 text-teal-800 font-bold slot-item cursor-pointer text-sm md:text-lg">?</span>`)}
+                <div class="mb-6 md:mb-8 p-4 md:p-6 bg-slate-900/50 rounded-xl border border-slate-700/30 text-base md:text-xl leading-loose shadow-inner backdrop-blur-sm" id="fill-text">
+                    ${game.text.replace(/<u>_______<\/u>/g, () => `<span class="inline-block min-w-[90px] md:min-w-[120px] border-b-4 border-cyber-blue text-center mx-1 px-2 text-cyber-blue font-bold slot-item cursor-pointer text-sm md:text-lg">?</span>`)}
                 </div>
-                <div class="flex flex-wrap gap-2 md:gap-3 justify-center mb-6 p-4 bg-white rounded-xl border border-slate-200" id="word-bank">
-                    ${window.tempGameState.words.map((w, i) => `<button onclick="selectWord('${w}', ${i})" id="word-${i}" class="px-3 py-2 md:px-5 md:py-3 bg-white border border-slate-300 rounded-lg shadow-md hover:shadow-lg hover:bg-teal-50 hover:border-teal-500 transition font-bold text-slate-700 text-xs md:text-base">${w}</button>`).join('')}
+                <div class="flex flex-wrap gap-2 md:gap-3 justify-center mb-6 p-4 bg-slate-900/20 rounded-xl border border-slate-700/30" id="word-bank">
+                    ${window.tempGameState.words.map((w, i) => `<button onclick="selectWord('${w}', ${i})" id="word-${i}" class="px-3 py-2 md:px-5 md:py-3 bg-slate-800 border border-slate-600 rounded-lg shadow-md hover:shadow-lg hover:bg-cyber-blue hover:border-cyber-blue transition font-bold text-slate-100 text-xs md:text-base">${w}</button>`).join('')}
                 </div>
-                <div class="text-center"><button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex}})" class="text-slate-400 hover:text-slate-600 underline text-sm">Réinitialiser</button></div>
+                <div class="text-center"><button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex}})" class="text-slate-400 hover:text-cyber-blue underline text-sm">Réinitialiser</button></div>
             `;
         }
 
@@ -1031,7 +1179,7 @@
             if(targetSlot) {
                 targetSlot.innerText = word;
                 targetSlot.dataset.value = word;
-                targetSlot.classList.add('bg-teal-100');
+                targetSlot.classList.add('bg-cyber-blue/20');
                 const btn = document.getElementById(`word-${btnIndex}`);
                 btn.style.display = 'none';
                 window.tempGameState.placedCount++;
@@ -1063,10 +1211,10 @@
 
             if(allCorrect) {
                 const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
-                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-green-600 shadow-xl`;
+                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-cyber-green shadow-xl`;
                 feedbackDiv.innerHTML = `Excellent ! Syntaxe et terminologie parfaites. ${nextBtn}`;
             } else {
-                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-red-600`;
+                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-cyber-pink shadow-xl`;
                 feedbackDiv.innerHTML = "Erreur. Les mots mal placés sont indiqués en rouge.";
             }
 
@@ -1089,21 +1237,21 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     ${game.categories.map(cat => `
-                        <div class="p-3 md:p-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 sort-zone min-h-[140px] md:min-h-[160px] flex flex-col" 
+                        <div class="p-3 md:p-6 bg-slate-900/20 rounded-xl border-2 border-dashed border-slate-700/30 sort-zone min-h-[140px] md:min-h-[160px] flex flex-col" 
                              data-cat="${cat}" 
                              onclick="handleZoneClick('${cat.replace(/'/g, "\\'")}')">
-                            <h4 class="font-bold text-center mb-3 md:mb-4 text-slate-500 uppercase tracking-widest text-[10px] md:text-xs border-b pb-2">${cat}</h4>
+                            <h4 class="font-bold text-center mb-3 md:mb-4 text-cyber-blue uppercase tracking-widest text-[10px] md:text-xs border-b border-slate-700/30 pb-2">${cat}</h4>
                             <div class="space-y-2 md:space-y-3 min-h-[80px] md:min-h-[100px] flex-grow" id="zone-${cat.replace(/\s/g,'')}"></div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="mt-6 md:mt-8 p-4 md:p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <h4 class="font-bold text-xs md:text-sm text-slate-400 mb-3 md:mb-4 uppercase tracking-widest text-center">Éléments à trier</h4>
+                <div class="mt-6 md:mt-8 p-4 md:p-6 bg-slate-900/10 rounded-xl border border-slate-700/20 shadow-sm">
+                    <h4 class="font-bold text-xs md:text-sm text-slate-500 mb-3 md:mb-4 uppercase tracking-widest text-center">Éléments à trier</h4>
                     <div class="flex flex-wrap gap-2 md:gap-3 justify-center" id="source-bank">
                         ${items.map(item => `
                             <div onclick="handleItemClick('${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
                                  id="drag-${item.text.replace(/\s/g,'')}" 
-                                 class="bg-white px-2 md:px-4 py-2 md:py-3 border border-slate-300 rounded-lg shadow-sm cursor-pointer hover:border-teal-500 hover:shadow-md transition text-[10px] md:text-sm font-semibold text-slate-700 select-none draggable-item">
+                                 class="bg-slate-800/80 px-2 md:px-4 py-2 md:py-3 border border-slate-700/30 rounded-lg shadow-sm cursor-pointer hover:border-cyber-blue hover:shadow-md hover:bg-slate-700 transition text-[10px] md:text-sm font-semibold text-slate-100 select-none draggable-item">
                                 ${item.text}
                             </div>
                         `).join('')}
@@ -1137,8 +1285,8 @@
             
             if (targetCat === correctCat) {
                 zone.appendChild(draggedEl);
-                draggedEl.classList.remove('cursor-pointer', 'hover:shadow-md', 'bg-white', 'selected-tap');
-                draggedEl.classList.add('bg-green-50', 'border-green-500', 'text-green-800', 'cursor-default', 'shadow-inner', 'text-[10px]', 'md:text-sm');
+                draggedEl.classList.remove('cursor-pointer', 'hover:shadow-md', 'bg-slate-900/80', 'selected-tap');
+                draggedEl.classList.add('bg-slate-800', 'border-cyber-green', 'text-cyber-green', 'cursor-default', 'shadow-inner', 'text-[10px]', 'md:text-sm');
                 draggedEl.onclick = null; // Disable click
                 window.tempSortState = { selectedItem: null, correctCat: null, element: null }; // Reset
                 
@@ -1146,8 +1294,8 @@
                 checkSortGameCompletion();
 
             } else {
-                draggedEl.classList.add('animate-pulse', 'bg-red-50');
-                setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-50'), 500);
+                draggedEl.classList.add('animate-pulse', 'bg-red-900/20', 'border-red-500/50');
+                setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-900/20', 'border-red-500/50'), 500);
             }
         };
 
@@ -1156,11 +1304,11 @@
             if (bank && bank.children.length === 0) {
                 const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
                 const successDiv = document.createElement('div');
-                successDiv.className = "mt-6 text-center text-green-600 font-bold text-xl md:text-2xl py-8 fade-in";
+                successDiv.className = "mt-6 text-center text-cyber-green font-bold text-xl md:text-2xl py-8 fade-in drop-shadow-[0_0_20px_rgba(10,255,0,0.5)]";
                 successDiv.innerHTML = `<i class="fa-solid fa-check-circle mb-4"></i><br>Tri Réussi ! ${nextBtn}`;
                 
                 // Only append if not already there (to prevent multiple appends on rapid clicks, though logic prevents this)
-                if(!document.querySelector('#game-play-area .text-green-600')) {
+                if(!document.querySelector('#game-play-area .text-cyber-green')) {
                     document.getElementById('game-play-area').appendChild(successDiv);
                 }
             }
@@ -1180,21 +1328,21 @@
             // Mobile Fix: Stack vertically on mobile
             container.innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-4 md:gap-6">
-                    <div class="flex-1 bg-white p-3 md:p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h4 class="font-bold text-xs md:text-sm text-slate-400 mb-3 md:mb-4 uppercase tracking-widest">Éléments à ordonner</h4>
+                    <div class="flex-1 bg-slate-900/30 p-3 md:p-6 rounded-xl border border-slate-700/30 shadow-sm">
+                        <h4 class="font-bold text-xs md:text-sm text-slate-500 mb-3 md:mb-4 uppercase tracking-widest">Éléments à ordonner</h4>
                         <div class="space-y-2 md:space-y-3" id="order-source">
                             ${window.tempGameState.items.map((item, i) => `
-                                <div onclick="selectOrderItem(${i})" id="order-item-${i}" class="game-card p-2 md:p-4 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:border-teal-500 hover:bg-teal-50 transition font-medium text-[10px] md:text-base">
+                                <div onclick="selectOrderItem(${i})" id="order-item-${i}" class="game-card p-2 md:p-4 bg-slate-800/50 border border-slate-700/30 rounded-lg cursor-pointer hover:border-cyber-blue hover:bg-slate-700/80 transition font-medium text-[10px] md:text-base">
                                     ${item}
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                    <div class="flex-1 bg-slate-100 p-3 md:p-6 rounded-xl border-2 border-dashed border-slate-300">
-                        <h4 class="font-bold text-xs md:text-sm text-slate-400 mb-3 md:mb-4 uppercase tracking-widest text-center">Ordre Chronologique / Logique</h4>
+                    <div class="flex-1 bg-slate-900/10 p-3 md:p-6 rounded-xl border-2 border-dashed border-slate-700/30 shadow-inner">
+                        <h4 class="font-bold text-xs md:text-sm text-slate-500 mb-3 md:mb-4 uppercase tracking-widest text-center">Ordre Chronologique / Logique</h4>
                         <div class="space-y-2 md:space-y-3" id="order-target">
                             ${game.items.map((_, i) => `
-                                <div onclick="placeOrderItem(${i})" class="min-h-[40px] md:min-h-[60px] bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-50 hover:border-slate-400 transition font-bold text-xs md:text-sm">
+                                <div onclick="placeOrderItem(${i})" class="min-h-[40px] md:min-h-[60px] bg-slate-900/50 border border-slate-700/30 border-dashed rounded-lg flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-800/50 hover:border-slate-500 transition font-bold text-xs md:text-sm">
                                     Étape ${i+1}
                                 </div>
                             `).join('')}
@@ -1207,11 +1355,11 @@
         window.selectOrderItem = (index) => {
             if(window.tempGameState.selectedIndex !== null) {
                 const prev = document.getElementById(`order-item-${window.tempGameState.selectedIndex}`);
-                if(prev) prev.classList.remove('selected', 'ring-4', 'ring-teal-500', 'bg-teal-50');
+                if(prev) prev.classList.remove('selected', 'ring-4', 'ring-cyber-blue', 'bg-cyber-blue/20');
             }
             window.tempGameState.selectedIndex = index;
             const el = document.getElementById(`order-item-${index}`);
-            el.classList.add('selected', 'ring-4', 'ring-teal-500', 'bg-teal-50', 'z-10');
+            el.classList.add('selected', 'ring-4', 'ring-cyber-blue', 'bg-cyber-blue/20', 'z-10');
         };
 
         window.placeOrderItem = (stepIndex) => {
@@ -1223,9 +1371,9 @@
             const targetSlot = targetSlots[stepIndex];
 
             if(selectedItemText === correctText) {
-                targetSlot.innerHTML = `<span class="text-green-700 font-bold text-xs md:text-lg"><i class="fa-solid fa-check-circle mr-1 md:mr-2"></i>${selectedItemText}</span>`;
-                targetSlot.classList.remove('bg-white', 'border-dashed', 'text-slate-300', 'cursor-pointer', 'hover:bg-slate-50');
-                targetSlot.classList.add('bg-green-50', 'border-green-500', 'cursor-default', 'shadow-inner');
+                targetSlot.innerHTML = `<span class="text-cyber-green font-bold text-xs md:text-lg"><i class="fa-solid fa-check-circle mr-1 md:mr-2"></i>${selectedItemText}</span>`;
+                targetSlot.classList.remove('bg-slate-900/50', 'border-slate-700/30', 'text-slate-500', 'cursor-pointer', 'hover:bg-slate-800/50');
+                targetSlot.classList.add('bg-cyber-green/20', 'border-cyber-green', 'text-cyber-green', 'cursor-default', 'shadow-inner');
                 targetSlot.removeAttribute('onclick');
                 document.getElementById(`order-item-${window.tempGameState.selectedIndex}`).style.display = 'none';
                 window.tempGameState.placedCount++;
@@ -1234,14 +1382,14 @@
                     const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
                     setTimeout(() => {
                         targetSlot.parentElement.parentElement.innerHTML = `
-                            <div class="h-48 md:h-64 flex items-center justify-center bg-green-50 rounded-xl text-green-600 text-lg md:text-2xl font-bold animate-pulse">
+                            <div class="h-48 md:h-64 flex items-center justify-center bg-cyber-green/20 rounded-xl text-cyber-green text-lg md:text-2xl font-bold animate-pulse shadow-[0_0_20px_rgba(10,255,0,0.8)]">
                                 <i class="fa-solid fa-trophy mb-2 text-3xl md:text-4xl"></i><br>Ordre Correct ! ${nextBtn}
                             </div>`;
                     }, 300);
                 }
             } else {
-                targetSlot.classList.add('animate-pulse', 'bg-red-50', 'border-red-400');
-                setTimeout(() => targetSlot.classList.remove('animate-pulse', 'bg-red-50', 'border-red-400'), 500);
+                targetSlot.classList.add('animate-pulse', 'bg-red-900/20', 'border-red-500/50');
+                setTimeout(() => targetSlot.classList.remove('animate-pulse', 'bg-red-900/20', 'border-red-500/50'), 500);
             }
         };
 
@@ -1249,8 +1397,8 @@
         function renderQuiz(container, chapterId) {
             const chap = CHAPTERS.find(c => c.id === chapterId);
             container.innerHTML = `
-                <div class="max-w-3xl mx-auto glass-panel p-6 md:p-10 rounded-2xl fade-in border border-slate-200">
-                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-slate-600 flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Abandonner</button>
+                <div class="max-w-3xl mx-auto glass-panel p-6 md:p-10 rounded-2xl fade-in border border-slate-700/30">
+                    <button onclick="router('chapter', ${chapterId})" class="mb-6 text-slate-400 hover:text-white flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> Abandonner</button>
                     <div id="quiz-content"></div>
                 </div>
             `;
@@ -1265,10 +1413,10 @@
                 updateProgress();
                 content.innerHTML = `
                     <div class="text-center py-10 md:py-12">
-                        <div class="inline-block p-4 md:p-6 bg-green-100 rounded-full text-green-600 text-4xl md:text-5xl mb-4 md:mb-6 shadow-lg"><i class="fa-solid fa-award"></i></div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-3 md:mb-4">Chapitre Validé !</h2>
-                        <p class="text-sm md:text-base text-slate-600 mb-6 md:mb-8">Vous avez démontré une maîtrise experte de "${chap.title}".</p>
-                        <button onclick="router('chapter', ${chap.id})" class="bg-teal-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl hover:bg-teal-700 transition font-bold text-base md:text-lg shadow-lg">Continuer</button>
+                        <div class="inline-block p-4 md:p-6 bg-cyber-green/10 rounded-full text-cyber-green text-4xl md:text-5xl mb-4 md:mb-6 shadow-[0_0_30px_rgba(10,255,0,0.8)]"><i class="fa-solid fa-award"></i></div>
+                        <h2 class="text-2xl md:text-3xl font-display font-bold text-white mb-3 md:mb-4">Chapitre Validé !</h2>
+                        <p class="text-sm md:text-base text-slate-300 mb-6 md:mb-8">Vous avez démontré une maîtrise experte de "${chap.title}".</p>
+                        <button onclick="router('chapter', ${chap.id})" class="btn-cyber text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:scale-105 transition-transform">Continuer</button>
                     </div>
                 `;
                 return;
@@ -1276,14 +1424,14 @@
 
             const q = chap.quiz[index];
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-4 md:mb-6 text-[10px] md:text-sm font-bold text-slate-400 uppercase tracking-wider">
+                <div class="flex justify-between items-center mb-4 md:mb-6 text-[10px] md:text-sm font-bold text-cyber-blue uppercase tracking-wider">
                     <span>Question ${index + 1} / 20</span>
                     <span>Série: Expert</span>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-6 md:mb-8 leading-relaxed">${q.q}</h3>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-6 md:mb-8 leading-relaxed drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">${q.q}</h3>
                 <div class="space-y-2 md:space-y-4">
                     ${q.options.map((opt, i) => `
-                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id}, this)" class="quiz-option w-full text-left p-3 md:p-5 rounded-xl font-medium text-slate-700 shadow-sm text-sm md:text-base">
+                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id}, this)" class="quiz-option w-full text-left p-3 md:p-5 rounded-xl font-medium text-slate-200 shadow-sm text-sm md:text-base">
                             <span class="option-text relative z-10">${opt}</span>
                         </button>
                     `).join('')}
@@ -1297,16 +1445,16 @@
             const options = document.querySelectorAll('.quiz-option');
             options.forEach(btn => btn.disabled = true);
 
-            // Identify the icon container
+            // Identify icon container
             const originalContent = btnElement.querySelector('.option-text');
 
             if (selected === correct) {
-                // Correct Logic
+                // Correct Logic - Futuristic Green
                 btnElement.classList.remove('quiz-option');
                 btnElement.classList.add('correct-btn');
                 
                 // Add Checkmark icon
-                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-circle-check ml-3"></i>`;
+                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-circle-check ml-3 text-cyber-green"></i>`;
 
                 // Wait then Next
                 setTimeout(() => {
@@ -1314,12 +1462,12 @@
                     loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
                 }, 800);
             } else {
-                // Incorrect Logic
+                // Incorrect Logic - Futuristic Pink
                 btnElement.classList.remove('quiz-option');
                 btnElement.classList.add('wrong-btn');
 
                 // Add X Mark icon
-                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-xmark ml-3"></i>`;
+                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-xmark ml-3 text-cyber-pink"></i>`;
 
                 // Shake and Reset after delay
                 setTimeout(() => {
