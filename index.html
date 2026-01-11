@@ -95,6 +95,49 @@
             70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
             100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
         }
+
+        /* --- NEW FUTURISTIC QUIZ STYLES --- */
+        .quiz-option {
+            /* Glassmorphism & Futuristic Base */
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .quiz-option:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 10px 15px -3px rgba(45, 212, 191, 0.15);
+            border-color: #2dd4bf;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Correct State - Green Glow */
+        .quiz-option.correct-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+            transform: scale(1.02);
+            pointer-events: none;
+        }
+
+        /* Wrong State - Red Shake */
+        .quiz-option.wrong-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -134,7 +177,7 @@
 
     <footer class="bg-white border-t border-slate-200 mt-auto py-6">
         <div class="text-center text-slate-400 text-xs">
-            Formation Avancée basée sur le cours Gestion des Conflits.
+            Formation Avancée basée sur le cours Gestion de conflits.
         </div>
     </footer>
 
@@ -743,6 +786,31 @@
             const bar = document.getElementById('global-progress');
             if(bar) bar.style.width = pct + '%';
         }
+        
+        // --- HELPER: NEXT GAME BUTTON ---
+        function getNextGameButton(chapterId, gameIndex) {
+            const gamesCount = CHAPTERS.find(c => c.id === chapterId).games.length;
+            
+            if (gameIndex >= gamesCount - 1) {
+                // Last game -> Go to Quiz
+                return `
+                    <div class="mt-6 text-center fade-in">
+                        <button onclick="router('quiz', ${chapterId})" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
+                            Passer au Quiz <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Next Game
+                return `
+                    <div class="mt-6 text-center fade-in">
+                        <button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex + 1}})" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
+                            Jeu Suivant <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        }
 
         // --- 4. VIEW RENDERERS ---
 
@@ -858,15 +926,15 @@
             `;
 
             const playArea = document.getElementById('game-play-area');
-            if (game.type === 'match') launchMatchGame(playArea, game);
+            if (game.type === 'match') launchMatchGame(playArea, game, chapterId, gameIndex);
             else if (game.type === 'fill') launchFillGame(playArea, game, chapterId, gameIndex);
-            else if (game.type === 'sort') launchSortGame(playArea, game);
-            else if (game.type === 'order') launchOrderGame(playArea, game);
+            else if (game.type === 'sort') launchSortGame(playArea, game, chapterId, gameIndex);
+            else if (game.type === 'order') launchOrderGame(playArea, game, chapterId, gameIndex);
         }
 
         // --- GAME: RELIEZ ---
-        function launchMatchGame(container, game) {
-            window.tempGameState = { matches: 0, total: game.pairs.length, selectedLeft: null, selectedRight: null };
+        function launchMatchGame(container, game, chapterId, gameIndex) {
+            window.tempGameState = { matches: 0, total: game.pairs.length, selectedLeft: null, selectedRight: null, chapterId, gameIndex };
             let lefts = game.pairs.map((p, i) => ({text: p.left, id: i, side: 'left'})).sort(() => Math.random() - 0.5);
             let rights = game.pairs.map((p, i) => ({text: p.right, id: i, side: 'right'})).sort(() => Math.random() - 0.5);
 
@@ -914,7 +982,14 @@
                     window.tempGameState.matches++;
                     window.tempGameState.selectedLeft = null; window.tempGameState.selectedRight = null;
                     if(window.tempGameState.matches === window.tempGameState.total) {
-                        setTimeout(() => container.innerHTML = `<div class="text-center text-green-600 font-bold text-xl md:text-2xl py-8 md:py-12 animate-bounce"><i class="fa-solid fa-check-circle mb-4"></i><br>Parfait !</div>`, 500);
+                        const container = document.getElementById('game-play-area');
+                        const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
+                        setTimeout(() => {
+                            container.innerHTML = `
+                                <div class="text-center text-green-600 font-bold text-xl md:text-2xl py-8 md:py-12 animate-bounce fade-in"><i class="fa-solid fa-check-circle mb-4"></i><br>Parfait !</div>
+                                ${nextBtn}
+                            `;
+                        }, 500);
                     }
                 } else {
                     document.getElementById(`l-${window.tempGameState.selectedLeft}`).classList.add('wrong');
@@ -929,7 +1004,6 @@
 
         // --- GAME: COMPLÉTEZ (FIXED LOGIC) ---
         function launchFillGame(container, game, chapterId, gameIndex) {
-            // Store CORRECT ORDER and SHUFFLED BANK separately
             window.tempGameState = {
                 correctWords: [...game.words], // The correct answer array
                 words: [...game.words].sort(() => Math.random() - 0.5), // The shuffled bank
@@ -972,7 +1046,7 @@
             let allCorrect = true;
             const feedbackDiv = document.createElement('div');
 
-            // Strict validation: Check each slot against the correct word index
+            // Strict validation: Check each slot against correct word index
             for(let i = 0; i < slots.length; i++) {
                 const slot = slots[i];
                 const correctWord = window.tempGameState.correctWords[i];
@@ -988,8 +1062,9 @@
             }
 
             if(allCorrect) {
+                const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
                 feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-green-600 shadow-xl`;
-                feedbackDiv.innerHTML = "Excellent ! Syntaxe et terminologie parfaites.";
+                feedbackDiv.innerHTML = `Excellent ! Syntaxe et terminologie parfaites. ${nextBtn}`;
             } else {
                 feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-red-600`;
                 feedbackDiv.innerHTML = "Erreur. Les mots mal placés sont indiqués en rouge.";
@@ -999,9 +1074,14 @@
         }
 
         // --- GAME: CLASSEZ (SORT) - MOBILE TOUCH OPTIMIZED ---
-        function launchSortGame(container, game) {
+        function launchSortGame(container, game, chapterId, gameIndex) {
             let items = [...game.items].sort(() => Math.random() - 0.5);
-            
+            window.tempGameState = {
+                chapterId: chapterId,
+                gameIndex: gameIndex,
+                totalItems: game.items.length
+            };
+
             // Mobile Fix: Stack columns on mobile
             container.innerHTML = `
                 <div class="text-xs text-slate-500 mb-4 italic text-center">
@@ -1061,18 +1141,40 @@
                 draggedEl.classList.add('bg-green-50', 'border-green-500', 'text-green-800', 'cursor-default', 'shadow-inner', 'text-[10px]', 'md:text-sm');
                 draggedEl.onclick = null; // Disable click
                 window.tempSortState = { selectedItem: null, correctCat: null, element: null }; // Reset
+                
+                // Check Completion
+                checkSortGameCompletion();
+
             } else {
                 draggedEl.classList.add('animate-pulse', 'bg-red-50');
                 setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-50'), 500);
             }
         };
 
+        function checkSortGameCompletion() {
+            const bank = document.getElementById('source-bank');
+            if (bank && bank.children.length === 0) {
+                const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
+                const successDiv = document.createElement('div');
+                successDiv.className = "mt-6 text-center text-green-600 font-bold text-xl md:text-2xl py-8 fade-in";
+                successDiv.innerHTML = `<i class="fa-solid fa-check-circle mb-4"></i><br>Tri Réussi ! ${nextBtn}`;
+                
+                // Only append if not already there (to prevent multiple appends on rapid clicks, though logic prevents this)
+                if(!document.querySelector('#game-play-area .text-green-600')) {
+                    document.getElementById('game-play-area').appendChild(successDiv);
+                }
+            }
+        }
+
         // --- GAME: ORDRE (ORDER) ---
-        function launchOrderGame(container, game) {
+        function launchOrderGame(container, game, chapterId, gameIndex) {
             window.tempGameState = {
                 items: [...game.items].sort(() => Math.random() - 0.5),
                 selectedIndex: null,
-                placedCount: 0
+                placedCount: 0,
+                chapterId: chapterId,
+                gameIndex: gameIndex,
+                total: game.items.length
             };
             
             // Mobile Fix: Stack vertically on mobile
@@ -1128,9 +1230,13 @@
                 document.getElementById(`order-item-${window.tempGameState.selectedIndex}`).style.display = 'none';
                 window.tempGameState.placedCount++;
                 window.tempGameState.selectedIndex = null;
-                if(window.tempGameState.placedCount === window.tempGameState.items.length) {
+                if(window.tempGameState.placedCount === window.tempGameState.total) {
+                    const nextBtn = getNextGameButton(window.tempGameState.chapterId, window.tempGameState.gameIndex);
                     setTimeout(() => {
-                        targetSlot.parentElement.parentElement.innerHTML = `<div class="h-48 md:h-64 flex items-center justify-center bg-green-50 rounded-xl text-green-600 text-lg md:text-2xl font-bold animate-pulse"><i class="fa-solid fa-trophy mb-2 text-3xl md:text-4xl"></i><br>Ordre Correct !</div>`;
+                        targetSlot.parentElement.parentElement.innerHTML = `
+                            <div class="h-48 md:h-64 flex items-center justify-center bg-green-50 rounded-xl text-green-600 text-lg md:text-2xl font-bold animate-pulse">
+                                <i class="fa-solid fa-trophy mb-2 text-3xl md:text-4xl"></i><br>Ordre Correct ! ${nextBtn}
+                            </div>`;
                     }, 300);
                 }
             } else {
@@ -1139,7 +1245,7 @@
             }
         };
 
-        // --- 6. QUIZ ENGINE (20 QUESTIONS HARD) ---
+        // --- 6. QUIZ ENGINE (20 QUESTIONS HARD) - FUTURISTIC UI ---
         function renderQuiz(container, chapterId) {
             const chap = CHAPTERS.find(c => c.id === chapterId);
             container.innerHTML = `
@@ -1177,20 +1283,51 @@
                 <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-6 md:mb-8 leading-relaxed">${q.q}</h3>
                 <div class="space-y-2 md:space-y-4">
                     ${q.options.map((opt, i) => `
-                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id})" class="w-full text-left p-3 md:p-5 border border-slate-200 rounded-lg hover:border-teal-500 hover:bg-teal-50 transition font-medium text-slate-700 shadow-sm text-sm md:text-base">
-                            ${opt}
+                        <button onclick="handleQuizAnswer(${index}, ${i}, ${q.a}, ${chap.id}, this)" class="quiz-option w-full text-left p-3 md:p-5 rounded-xl font-medium text-slate-700 shadow-sm text-sm md:text-base">
+                            <span class="option-text relative z-10">${opt}</span>
                         </button>
                     `).join('')}
                 </div>
             `;
         }
 
-        window.handleQuizAnswer = (index, selected, correct, chapId) => {
+        // --- NEW FUTURISTIC QUIZ LOGIC ---
+        window.handleQuizAnswer = (index, selected, correct, chapId, btnElement) => {
+            // Disable all buttons to prevent multiple clicks
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(btn => btn.disabled = true);
+
+            // Identify the icon container
+            const originalContent = btnElement.querySelector('.option-text');
+
             if (selected === correct) {
-                appState.score += 5; // 20 Qs * 5 pts = 100 pts
-                loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
+                // Correct Logic
+                btnElement.classList.remove('quiz-option');
+                btnElement.classList.add('correct-btn');
+                
+                // Add Checkmark icon
+                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-circle-check ml-3"></i>`;
+
+                // Wait then Next
+                setTimeout(() => {
+                    appState.score += 5; // 20 Qs * 5 pts = 100 pts
+                    loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
+                }, 800);
             } else {
-                alert("Incorrect. Consultez le cours et réessayez.");
+                // Incorrect Logic
+                btnElement.classList.remove('quiz-option');
+                btnElement.classList.add('wrong-btn');
+
+                // Add X Mark icon
+                originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-xmark ml-3"></i>`;
+
+                // Shake and Reset after delay
+                setTimeout(() => {
+                    btnElement.classList.remove('wrong-btn');
+                    btnElement.classList.add('quiz-option'); // Reset style
+                    originalContent.innerHTML = originalContent.textContent; // Remove icon
+                    options.forEach(btn => btn.disabled = false); // Re-enable
+                }, 800);
             }
         };
 
@@ -1209,6 +1346,3 @@
     </script>
 </body>
 </html>
-
-
-
