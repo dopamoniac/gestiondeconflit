@@ -72,6 +72,29 @@
         
         .sort-zone { min-height: 140px; transition: all 0.3s; }
         .sort-zone.drag-over { background-color: #e0f2fe; border-color: #0ea5e9; transform: scale(1.01); }
+        
+        /* Mobile Optimization for Sort Items */
+        .draggable-item { touch-action: none; }
+        .draggable-item.selected-tap {
+            background-color: #ccfbf1;
+            border-color: #0f766e;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            z-index: 50;
+        }
+
+        /* Fill Game Error State */
+        .slot-item.wrong-slot {
+            background-color: #fee2e2;
+            border-color: #dc2626;
+            color: #dc2626;
+            animation: pulseRed 1s infinite;
+        }
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -195,15 +218,27 @@
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Classification Précise (Hard)",
-                        categories: ["Niveau Intra-Organisationnel", "Niveau Inter-Organisationnel", "Source Structurelle"],
+                        title: "Jeu 3: Classification Globale (12 Éléments)",
+                        // Updated as per request: 12 items split into Enjeux, Niveaux, Sources
+                        categories: ["Les Enjeux", "Les Niveaux", "Les Sources"],
                         items: [
-                            { text: "Conflit Vertical", cat: "Niveau Intra-Organisationnel" },
-                            { text: "Opposition entre deux entreprises", cat: "Niveau Inter-Organisationnel" },
-                            { text: "Récompenses séparées des unités", cat: "Source Structurelle" },
-                            { text: "Conflit Staff/Line", cat: "Niveau Intra-Organisationnel" },
-                            { text: "Ressources communes limitées", cat: "Source Structurelle" },
-                            { text: "Conflit entre une entreprise et ses fournisseurs", cat: "Niveau Inter-Organisationnel" }
+                            // Enjeux (3 items based on text, can be extended)
+                            { text: "Enjeux Mécaniques", cat: "Les Enjeux" },
+                            { text: "Enjeux Sociaux Émotionnels", cat: "Les Enjeux" },
+                            { text: "Enjeux d'Intérêts", cat: "Les Enjeux" },
+                            
+                            // Niveaux (4 items)
+                            { text: "Intrapersonnel", cat: "Les Niveaux" },
+                            { text: "Interpersonnel", cat: "Les Niveaux" },
+                            { text: "Intragroupe", cat: "Les Niveaux" },
+                            { text: "Intergroupe", cat: "Les Niveaux" },
+
+                            // Sources (5 items based on text)
+                            { text: "Source Informationnelle", cat: "Les Sources" },
+                            { text: "Source Relationnelle", cat: "Les Sources" },
+                            { text: "Source Factuelle", cat: "Les Sources" },
+                            { text: "Source Structurelle", cat: "Les Sources" },
+                            { text: "Le Changement", cat: "Les Sources" }
                         ]
                     },
                     {
@@ -838,11 +873,17 @@
             const renderBoard = () => {
                 container.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-                        <div class="space-y-2 md:space-y-3">
-                            ${lefts.map(item => `<div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                        <div>
+                            <h4 class="text-center font-bold text-slate-500 mb-3 uppercase text-xs tracking-widest">Éléments</h4>
+                            <div class="space-y-2 md:space-y-3">
+                                ${lefts.map(item => `<div id="l-${item.id}" onclick="handleMatchClick('left', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                            </div>
                         </div>
-                        <div class="space-y-2 md:space-y-3">
-                            ${rights.map(item => `<div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                        <div>
+                            <h4 class="text-center font-bold text-slate-500 mb-3 uppercase text-xs tracking-widest">Définitions</h4>
+                            <div class="space-y-2 md:space-y-3">
+                                ${rights.map(item => `<div id="r-${item.id}" onclick="handleMatchClick('right', ${item.id})" class="game-card p-3 md:p-4 bg-white rounded-lg text-center font-semibold text-slate-700 cursor-pointer shadow-sm border border-slate-200 text-xs md:text-base">${item.text}</div>`).join('')}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -886,10 +927,12 @@
             }
         };
 
-        // --- GAME: COMPLÉTEZ ---
+        // --- GAME: COMPLÉTEZ (FIXED LOGIC) ---
         function launchFillGame(container, game, chapterId, gameIndex) {
+            // Store CORRECT ORDER and SHUFFLED BANK separately
             window.tempGameState = {
-                words: [...game.words].sort(() => Math.random() - 0.5),
+                correctWords: [...game.words], // The correct answer array
+                words: [...game.words].sort(() => Math.random() - 0.5), // The shuffled bank
                 placedCount: 0,
                 total: game.words.length,
                 chapterId: chapterId,
@@ -926,43 +969,61 @@
 
         function checkFillAnswer() {
             const slots = document.querySelectorAll('.slot-item');
-            const filled = Array.from(slots).every(s => s.innerText !== '?');
-            const userWords = Array.from(slots).map(s => s.dataset.value).sort();
-            const originalWords = [...window.tempGameState.words].sort();
-            const isCorrect = JSON.stringify(userWords) === JSON.stringify(originalWords);
-            
+            let allCorrect = true;
             const feedbackDiv = document.createElement('div');
-            feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in ${isCorrect ? 'bg-green-600 shadow-xl' : 'bg-red-600'}`;
-            feedbackDiv.innerHTML = isCorrect ? "Excellent ! Syntaxe et terminologie parfaites." : "Erreur. Veuillez vérifier l'orthographe et le contexte.";
+
+            // Strict validation: Check each slot against the correct word index
+            for(let i = 0; i < slots.length; i++) {
+                const slot = slots[i];
+                const correctWord = window.tempGameState.correctWords[i];
+                const userWord = slot.dataset.value;
+
+                // Remove previous error styles
+                slot.classList.remove('wrong-slot');
+
+                if(userWord !== correctWord) {
+                    allCorrect = false;
+                    slot.classList.add('wrong-slot');
+                }
+            }
+
+            if(allCorrect) {
+                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-green-600 shadow-xl`;
+                feedbackDiv.innerHTML = "Excellent ! Syntaxe et terminologie parfaites.";
+            } else {
+                feedbackDiv.className = `mt-4 md:mt-6 p-4 md:p-6 rounded-xl text-center font-bold text-white text-base md:text-xl fade-in bg-red-600`;
+                feedbackDiv.innerHTML = "Erreur. Les mots mal placés sont indiqués en rouge.";
+            }
+
             document.getElementById('game-play-area').appendChild(feedbackDiv);
         }
 
-        // --- GAME: CLASSEZ (SORT) ---
+        // --- GAME: CLASSEZ (SORT) - MOBILE TOUCH OPTIMIZED ---
         function launchSortGame(container, game) {
             let items = [...game.items].sort(() => Math.random() - 0.5);
             
             // Mobile Fix: Stack columns on mobile
             container.innerHTML = `
+                <div class="text-xs text-slate-500 mb-4 italic text-center">
+                    <i class="fa-solid fa-hand-pointer"></i> Sur mobile : Tappez l'élément, puis tapez la zone cible.
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     ${game.categories.map(cat => `
-                        <div class="p-3 md:p-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 sort-zone min-h-[140px] md:min-h-[160px]" 
+                        <div class="p-3 md:p-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 sort-zone min-h-[140px] md:min-h-[160px] flex flex-col" 
                              data-cat="${cat}" 
-                             ondragover="event.preventDefault(); this.classList.add('drag-over')" 
-                             ondragleave="this.classList.remove('drag-over')"
-                             ondrop="handleDrop(event, '${cat.replace(/'/g, "\\'")}')">
+                             onclick="handleZoneClick('${cat.replace(/'/g, "\\'")}')">
                             <h4 class="font-bold text-center mb-3 md:mb-4 text-slate-500 uppercase tracking-widest text-[10px] md:text-xs border-b pb-2">${cat}</h4>
-                            <div class="space-y-2 md:space-y-3 min-h-[80px] md:min-h-[100px]" id="zone-${cat.replace(/\s/g,'')}"></div>
+                            <div class="space-y-2 md:space-y-3 min-h-[80px] md:min-h-[100px] flex-grow" id="zone-${cat.replace(/\s/g,'')}"></div>
                         </div>
                     `).join('')}
                 </div>
                 <div class="mt-6 md:mt-8 p-4 md:p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <h4 class="font-bold text-xs md:text-sm text-slate-400 mb-3 md:mb-4 uppercase tracking-widest text-center">Glissez les éléments ci-dessous vers les bonnes catégories</h4>
+                    <h4 class="font-bold text-xs md:text-sm text-slate-400 mb-3 md:mb-4 uppercase tracking-widest text-center">Éléments à trier</h4>
                     <div class="flex flex-wrap gap-2 md:gap-3 justify-center" id="source-bank">
                         ${items.map(item => `
-                            <div draggable="true" 
-                                 ondragstart="handleDrag(event, '${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
+                            <div onclick="handleItemClick('${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
                                  id="drag-${item.text.replace(/\s/g,'')}" 
-                                 class="bg-white px-2 md:px-4 py-2 md:py-3 border border-slate-300 rounded-lg shadow-sm cursor-grab active:cursor-grabbing hover:border-teal-500 hover:shadow-md transition text-[10px] md:text-sm font-semibold text-slate-700 select-none touch-none">
+                                 class="bg-white px-2 md:px-4 py-2 md:py-3 border border-slate-300 rounded-lg shadow-sm cursor-pointer hover:border-teal-500 hover:shadow-md transition text-[10px] md:text-sm font-semibold text-slate-700 select-none draggable-item">
                                 ${item.text}
                             </div>
                         `).join('')}
@@ -971,27 +1032,35 @@
             `;
         }
 
-        window.handleDrag = (ev, text, correctCat, el) => {
-            ev.dataTransfer.setData("text", text);
-            ev.dataTransfer.setData("cat", correctCat);
-            ev.dataTransfer.setData("id", el.id);
+        // Global state for Sort Game (Tap interaction)
+        window.tempSortState = { selectedItem: null, correctCat: null, element: null };
+
+        window.handleItemClick = (text, correctCat, el) => {
+            // Deselect previous
+            if(window.tempSortState.element) {
+                window.tempSortState.element.classList.remove('selected-tap');
+            }
+
+            // Select new
+            window.tempSortState.selectedItem = text;
+            window.tempSortState.correctCat = correctCat;
+            window.tempSortState.element = el;
+            el.classList.add('selected-tap');
         };
 
-        window.handleDrop = (ev, targetCat) => {
-            ev.preventDefault();
-            ev.currentTarget.classList.remove('drag-over');
-            const text = ev.dataTransfer.getData("text");
-            const correctCat = ev.dataTransfer.getData("cat");
-            const elementId = ev.dataTransfer.getData("id");
-            
+        window.handleZoneClick = (targetCat) => {
+            if(!window.tempSortState.element) return;
+
             const zone = document.getElementById(`zone-${targetCat.replace(/\s/g,'')}`);
-            const draggedEl = document.getElementById(elementId);
+            const draggedEl = window.tempSortState.element;
+            const correctCat = window.tempSortState.correctCat;
             
             if (targetCat === correctCat) {
                 zone.appendChild(draggedEl);
-                draggedEl.classList.remove('cursor-grab', 'hover:shadow-md', 'bg-white');
+                draggedEl.classList.remove('cursor-pointer', 'hover:shadow-md', 'bg-white', 'selected-tap');
                 draggedEl.classList.add('bg-green-50', 'border-green-500', 'text-green-800', 'cursor-default', 'shadow-inner', 'text-[10px]', 'md:text-sm');
-                draggedEl.draggable = false;
+                draggedEl.onclick = null; // Disable click
+                window.tempSortState = { selectedItem: null, correctCat: null, element: null }; // Reset
             } else {
                 draggedEl.classList.add('animate-pulse', 'bg-red-50');
                 setTimeout(() => draggedEl.classList.remove('animate-pulse', 'bg-red-50'), 500);
