@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Masterclass Pro: Gestion des Conflits & Négociation</title>
+    <title>Formation: Gestion des Conflits & Négociation</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,14 +49,14 @@
             --neon-green: #0aff00;
         }
 
+        /* --- BACKGROUND OPTIMIZATION --- */
+        /* Note: We set background-color inline in HTML to prevent white flash */
         body {
-            background-color: #020617; 
             background-image: 
                 radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%),
                 linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
             background-size: 100% 100%, 20px 20px;
-            color: #f8fafc; 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -73,29 +73,47 @@
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         
-        /* Intro Overlay */
-        #dopaem-intro {
-            background-color: #000; z-index: 9999;
+        /* --- OPENING PAGE (INTRO) STYLE --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000; 
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Subtle Grid Background for Intro */
             background-image: 
-                radial-gradient(circle at center, #1a1a1a 0%, #000 100%),
                 linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px;
+            background-size: 40px 40px;
         }
-        .intro-text {
-            font-family: 'Orbitron', sans-serif;
-            color: white;
-            font-size: 3rem;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px var(--neon-blue);
-            animation: textReveal 1s ease-out forwards;
+        .intro-content-wrapper {
+            text-align: center;
             opacity: 0;
-            transform: translateY(20px);
+            animation: introSlideUp 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
         }
-        @keyframes textReveal {
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes introSlideUp {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        
+        .brand-main {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: white;
+            text-shadow: 0 0 30px var(--neon-blue), 0 0 60px var(--neon-purple);
+            margin-bottom: 1rem;
+        }
+        .brand-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #94a3b8; 
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
         /* --- FUTURISTIC GAME UI --- */
         .game-card { 
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
@@ -193,7 +211,6 @@
 
         /* --- NEW FUTURISTIC QUIZ STYLES --- */
         .quiz-option {
-            /* Dark Glass + Neon Border Base */
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -202,7 +219,6 @@
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Holographic Hover */
         .quiz-option:hover {
             transform: translateY(-3px) scale(1.01);
             border-color: var(--neon-blue);
@@ -210,7 +226,6 @@
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
         }
 
-        /* Correct State - Neon Green Glow */
         .quiz-option.correct-btn {
             background: linear-gradient(135deg, #064e3b 0%, #00ff00 100%);
             border: 1px solid var(--neon-green);
@@ -233,7 +248,6 @@
             100% { opacity: 0; }
         }
 
-        /* Wrong State - Neon Pink Shake */
         .quiz-option.wrong-btn {
             background: linear-gradient(135deg, #4a044e 0%, #bc13fe 100%);
             border: 1px solid var(--neon-pink);
@@ -273,26 +287,31 @@
         .btn-cyber:hover::before { opacity: 1; }
         
         /* --- TEXT ADJUSTMENTS FOR DARK MODE --- */
-        h1, h2, h3, h4, p, span, div, li, ul, ol { color-scheme: dark; } /* Force dark mode colors */
-        .text-slate-800 { color: #f1f5f9; } /* Darkify headers */
+        h1, h2, h3, h4, p, span, div, li, ul, ol { color-scheme: dark; } 
+        .text-slate-800 { color: #f1f5f9; } 
         .text-slate-900 { color: #ffffff; }
-        .text-slate-700 { color: #cbd5e1; } /* Body text */
-        .text-slate-600 { color: #94a3b8; } /* Subtitles */
-        .text-slate-500 { color: #64748b; } /* Hints */
-        .text-slate-400 { color: #4b5563; } /* Labels */
-        .text-teal-700 { color: #5eead4; } /* Highlights */
+        .text-slate-700 { color: #cbd5e1; } 
+        .text-slate-600 { color: #94a3b8; } 
+        .text-slate-500 { color: #64748b; } 
+        .text-slate-400 { color: #4b5563; } 
+        .text-teal-700 { color: #5eead4; } 
         .text-teal-800 { color: #99f6e4; }
         .text-teal-600 { color: #2dd4bf; }
         
-        /* Glass specific text overrides */
         .glass-panel * { color: #f8fafc; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<!-- NOTE: background-color inline added to body tag to prevent white flash -->
+<body style="background-color: #020617; color: #f8fafc;" class="min-h-screen flex flex-col">
 
-    <!-- INTRO OVERLAY -->
-    <div id="dopaem-intro">
-        <div class="intro-text">@Dopaem</div>
+    <!-- OPENING PAGE (INTRO) -->
+    <div id="intro-overlay">
+        <div class="intro-content-wrapper">
+            <!-- Main Brand Text -->
+            <h1 class="brand-main">@Dopaem</h1>
+            <!-- Context Subtext -->
+            <div class="brand-sub">Gestion Conflits & Négociation</div>
+        </div>
     </div>
 
     <!-- Navbar -->
@@ -410,21 +429,17 @@
                     {
                         type: "sort",
                         title: "Jeu 3: Classification Globale ",
-                        // Updated as per request: 12 items split into Enjeux, Niveaux, Sources
                         categories: ["Les Enjeux", "Les Niveaux", "Les Sources"],
                         items: [
-                            // Enjeux (3 items based on text, can be extended)
                             { text: "Mécaniques", cat: "Les Enjeux" },
                             { text: "Sociaux Émotionnels", cat: "Les Enjeux" },
                             { text: "d'Intérêts", cat: "Les Enjeux" },
                             
-                            // Niveaux (4 items)
                             { text: "Intrapersonnel", cat: "Les Niveaux" },
                             { text: "Interpersonnel", cat: "Les Niveaux" },
                             { text: "Intragroupe", cat: "Les Niveaux" },
                             { text: "Intergroupe", cat: "Les Niveaux" },
 
-                            // Sources (5 items based on text)
                             { text: "Informationnelle", cat: "Les Sources" },
                             { text: "Relationnelle", cat: "Les Sources" },
                             { text: "Factuelle", cat: "Les Sources" },
@@ -508,7 +523,7 @@
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Interventions Stratégiques ",
+                        title: "Jeu 2: Interventions Stratégiques ",
                         categories: ["Stratégie Préventive", "Stratégie Curative Positive", "Gestion du Temps"],
                         items: [
                             { text: "Dialogue social / Système d'information", cat: "Stratégie Préventive" },
@@ -520,7 +535,7 @@
                     },
                     {
                         type: "order",
-                        title: "Jeu 4: Chronologie du Cycle",
+                        title: "Jeu 3: Chronologie du Cycle",
                         items: ["Gestation (Latence)", "Amplification (Massification)", "Manifestation (Éclatement)", "Déclin (Résolution)"]
                     }
                 ],
@@ -597,7 +612,7 @@
                     },
                     {
                         type: "sort",
-                        title: "Jeu 3: Intervention du Superviseur ",
+                        title: "Jeu 2: Intervention du Superviseur ",
                         categories: ["Attitude Sauveteur (Mauvaise)", "Attitude Superviseur (Bonne)"],
                         items: [
                             { text: "S'occuper des affaires des autres", cat: "Attitude Sauveteur (Mauvaise)" },
@@ -610,7 +625,7 @@
                     },
                     {
                         type: "order",
-                        title: "Jeu 4: Processus de Sortie du Triangle",
+                        title: "Jeu 3: Processus de Sortie du Triangle",
                         items: ["Prendre conscience de son rôle", "Prendre du recul (Vision Adulte)", "Ne pas entrer dans le jeu", "Donner des signes positifs"]
                     }
                 ],
@@ -642,11 +657,11 @@
                 title: "Chapitre 4 : Gestion RH & Discipline",
                 icon: "fa-user-tie",
                 summary: `
-                    <h3 class="text-2xl font-bold mb-4 text-white border-b border-slate-700/30 pb-2">Intervention & Cadre Juridique</h3>
+                    <h3 class="text-2xl font-bold mb-4 text-slate-800 border-b border-slate-700/30 pb-2">Intervention & Cadre Juridique</h3>
                     <p class="mb-4">Distinction cruciale : Difficile (Volontaire) vs En Difficulté (Compétence/Motivation).</p>
                     
                     <h4 class="font-bold mb-2 text-red-600">Gradation des Sanctions (Article 2088 C.c.Q)</h4>
-                    <p class="text-sm text-slate-300 mb-2">Le salarié doit travailler avec <strong>prudence et diligence</strong>. En cas de manquement volontaire : Mesures disciplinaires. En cas de manquement involontaire : Mesures administratives.</p>
+                    <p class="text-sm text-slate-600 mb-2">Le salarié doit travailler avec <strong>prudence et diligence</strong>. En cas de manquement volontaire : Mesures disciplinaires. En cas de manquement involontaire : Mesures administratives.</p>
                     <div class="flex flex-wrap gap-2 mb-4 text-xs">
                         <span class="bg-slate-900 border border-slate-700/30 px-2 py-1 rounded">1. Réprimande verbale</span>
                         <span class="text-slate-600">→</span>
@@ -845,7 +860,7 @@
                     {
                         type: "fill",
                         title: "Jeu 2: Le Concept ZAP ",
-                        text: "La <u>_______</u> est la zone de chevauchement acceptable. Si la 'Position de Repli' de l'acheteur est supérieure à la 'Position Affichée' du vendeur, il y a <u>_______</u> d'accord. Le négociateur doit choisir la technique <u>_______</u> à la situation.",
+                        text: "La <u>_______</u> est la zone de chevauchement acceptable. Si la 'Position De Repli' de l'acheteur est supérieure à la 'Position Affichée' du vendeur, il y a <u>_______</u> d'accord. Le négociateur doit choisir la technique <u>_______</u> à la situation.",
                         words: ["ZAP", "pas", "adaptée"]
                     },
                     {
@@ -876,7 +891,7 @@
                     { q: "La 'Globalisation' consiste à :", options: ["Diviser les problèmes.", "Convertir l'ensemble des objets en une mesure unique.", "Ignorer l'autre."], a: 1 },
                     { q: "Quand utiliser la technique de l'Élargissement ?", options: ["Seulement pour perdre.", "Pour sortir d'une impasse en redéfinissant le problème.", "Pour sanctionner."], a: 1 },
                     { q: "La 'Tactique' se distingue de la 'Stratégie' car :", options: ["Elle est le plan global.", "Elle est une initiative ponctuelle et opportuniste.", "Elle dure longtemps."], a: 1 },
-                    { q: "Qu'est-ce qu'une 'Position de Repli' ?", options: ["Ce qu'on veut vraiment.", "La limite basse en dessous de laquelle on refuse l'accord.", "Une faute."], a: 1 },
+                    { q: "Qu'est-ce qu'une 'Position De Repli' ?", options: ["Ce qu'on veut vraiment.", "La limite basse en dessous de laquelle on refuse l'accord.", "Une faute."], a: 1 },
                     { q: "Dans la technique du 'Paquet', les priorités doivent être :", options: ["Identiques.", "Complémentaires (utilités différentes).", "Inexistantes."], a: 1 },
                     { q: "Pourquoi le 'Bilan' est-il utile ?", options: ["Pour dormir.", "Pour dresser la balance coûts/avantages des concessions.", "Pour crier."], a: 1 },
                     { q: "Une stratégie 'Intégrative' considère l'autre comme :", options: ["Un adversaire.", "Un partenaire.", "Un ennemi."], a: 1 },
@@ -940,7 +955,6 @@
             const gamesCount = CHAPTERS.find(c => c.id === chapterId).games.length;
             
             if (gameIndex >= gamesCount - 1) {
-                // Last game -> Go to Quiz
                 return `
                     <div class="mt-6 text-center fade-in">
                         <button onclick="router('quiz', ${chapterId})" class="btn-cyber text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
@@ -949,7 +963,6 @@
                     </div>
                 `;
             } else {
-                // Next Game
                 return `
                     <div class="mt-6 text-center fade-in">
                         <button onclick="router('game', {chapterId: ${chapterId}, gameIndex: ${gameIndex + 1}})" class="btn-cyber text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform active:scale-95 flex items-center gap-2 mx-auto w-full md:w-auto">
@@ -1007,7 +1020,7 @@
                     <div onclick="router('game', {chapterId: ${id}, gameIndex: ${index}})" class="bg-slate-900/30 p-5 rounded-xl shadow-sm hover:shadow-lg hover:bg-slate-800/50 cursor-pointer border-l-4 border-slate-700/30 hover:border-cyber-blue transition flex justify-between items-center group">
                         <div>
                             <h4 class="font-bold text-slate-200 group-hover:text-cyber-blue transition">${g.title}</h4>
-                            <p class="text-xs text-slate-500 mt-1 uppercase tracking-wide">Niveau: Expert • ${g.type}</p>
+                            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">Niveau: Expert • ${g.type}</p>
                         </div>
                         <div class="text-slate-600 group-hover:text-cyber-blue transition"><i class="fa-solid ${icon} text-xl"></i></div>
                     </div>
@@ -1153,8 +1166,8 @@
         // --- GAME: COMPLÉTEZ (FIXED LOGIC) ---
         function launchFillGame(container, game, chapterId, gameIndex) {
             window.tempGameState = {
-                correctWords: [...game.words], // The correct answer array
-                words: [...game.words].sort(() => Math.random() - 0.5), // The shuffled bank
+                correctWords: [...game.words], 
+                words: [...game.words].sort(() => Math.random() - 0.5), 
                 placedCount: 0,
                 total: game.words.length,
                 chapterId: chapterId,
@@ -1194,13 +1207,11 @@
             let allCorrect = true;
             const feedbackDiv = document.createElement('div');
 
-            // Strict validation: Check each slot against correct word index
             for(let i = 0; i < slots.length; i++) {
                 const slot = slots[i];
                 const correctWord = window.tempGameState.correctWords[i];
                 const userWord = slot.dataset.value;
 
-                // Remove previous error styles
                 slot.classList.remove('wrong-slot');
 
                 if(userWord !== correctWord) {
@@ -1230,7 +1241,6 @@
                 totalItems: game.items.length
             };
 
-            // Mobile Fix: Stack columns on mobile
             container.innerHTML = `
                 <div class="text-xs text-slate-500 mb-4 italic text-center">
                     <i class="fa-solid fa-hand-pointer"></i> Sur mobile : Tappez l'élément, puis tapez la zone cible.
@@ -1251,7 +1261,7 @@
                         ${items.map(item => `
                             <div onclick="handleItemClick('${item.text.replace(/'/g, "\\'")}', '${item.cat.replace(/'/g, "\\'")}', this)" 
                                  id="drag-${item.text.replace(/\s/g,'')}" 
-                                 class="bg-slate-800/80 px-2 md:px-4 py-2 md:py-3 border border-slate-700/30 rounded-lg shadow-sm cursor-pointer hover:border-cyber-blue hover:shadow-md hover:bg-slate-700 transition text-[10px] md:text-sm font-semibold text-slate-100 select-none draggable-item">
+                                 class="bg-slate-800/80 px-2 md:px-4 py-2 md:py-3 border border-slate-700/30 rounded-lg shadow-sm cursor-pointer hover:border-cyber-blue hover:shadow-md hover:bg-slate-700/80 transition text-[10px] md:text-sm font-semibold text-slate-100 select-none draggable-item">
                                 ${item.text}
                             </div>
                         `).join('')}
@@ -1260,16 +1270,12 @@
             `;
         }
 
-        // Global state for Sort Game (Tap interaction)
         window.tempSortState = { selectedItem: null, correctCat: null, element: null };
 
         window.handleItemClick = (text, correctCat, el) => {
-            // Deselect previous
             if(window.tempSortState.element) {
                 window.tempSortState.element.classList.remove('selected-tap');
             }
-
-            // Select new
             window.tempSortState.selectedItem = text;
             window.tempSortState.correctCat = correctCat;
             window.tempSortState.element = el;
@@ -1287,11 +1293,13 @@
                 zone.appendChild(draggedEl);
                 draggedEl.classList.remove('cursor-pointer', 'hover:shadow-md', 'bg-slate-900/80', 'selected-tap');
                 draggedEl.classList.add('bg-slate-800', 'border-cyber-green', 'text-cyber-green', 'cursor-default', 'shadow-inner', 'text-[10px]', 'md:text-sm');
-                draggedEl.onclick = null; // Disable click
-                window.tempSortState = { selectedItem: null, correctCat: null, element: null }; // Reset
+                draggedEl.onclick = null; 
+                window.tempSortState = { selectedItem: null, correctCat: null, element: null }; 
                 
-                // Check Completion
-                checkSortGameCompletion();
+                // FIX: Use setTimeout (100ms) to ensure DOM updates
+                setTimeout(() => {
+                    checkSortGameCompletion();
+                }, 100);
 
             } else {
                 draggedEl.classList.add('animate-pulse', 'bg-red-900/20', 'border-red-500/50');
@@ -1307,7 +1315,6 @@
                 successDiv.className = "mt-6 text-center text-cyber-green font-bold text-xl md:text-2xl py-8 fade-in drop-shadow-[0_0_20px_rgba(10,255,0,0.5)]";
                 successDiv.innerHTML = `<i class="fa-solid fa-check-circle mb-4"></i><br>Tri Réussi ! ${nextBtn}`;
                 
-                // Only append if not already there (to prevent multiple appends on rapid clicks, though logic prevents this)
                 if(!document.querySelector('#game-play-area .text-cyber-green')) {
                     document.getElementById('game-play-area').appendChild(successDiv);
                 }
@@ -1325,7 +1332,6 @@
                 total: game.items.length
             };
             
-            // Mobile Fix: Stack vertically on mobile
             container.innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-4 md:gap-6">
                     <div class="flex-1 bg-slate-900/30 p-3 md:p-6 rounded-xl border border-slate-700/30 shadow-sm">
@@ -1407,7 +1413,6 @@
 
         function loadQuizQuestion(chap, index) {
             const content = document.getElementById('quiz-content');
-            // Harder threshold: 15/20 to pass (75%)
             if (index >= chap.quiz.length) {
                 appState.completedQuizzes.add(chap.id);
                 updateProgress();
@@ -1441,54 +1446,41 @@
 
         // --- NEW FUTURISTIC QUIZ LOGIC ---
         window.handleQuizAnswer = (index, selected, correct, chapId, btnElement) => {
-            // Disable all buttons to prevent multiple clicks
             const options = document.querySelectorAll('.quiz-option');
             options.forEach(btn => btn.disabled = true);
 
-            // Identify icon container
             const originalContent = btnElement.querySelector('.option-text');
 
             if (selected === correct) {
-                // Correct Logic - Futuristic Green
                 btnElement.classList.remove('quiz-option');
                 btnElement.classList.add('correct-btn');
-                
-                // Add Checkmark icon
                 originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-circle-check ml-3 text-cyber-green"></i>`;
-
-                // Wait then Next
                 setTimeout(() => {
-                    appState.score += 5; // 20 Qs * 5 pts = 100 pts
+                    appState.score += 5; 
                     loadQuizQuestion(CHAPTERS.find(c=>c.id===chapId), index + 1);
                 }, 800);
             } else {
-                // Incorrect Logic - Futuristic Pink
                 btnElement.classList.remove('quiz-option');
                 btnElement.classList.add('wrong-btn');
-
-                // Add X Mark icon
                 originalContent.innerHTML = `${originalContent.innerHTML} <i class="fa-solid fa-xmark ml-3 text-cyber-pink"></i>`;
-
-                // Shake and Reset after delay
                 setTimeout(() => {
                     btnElement.classList.remove('wrong-btn');
-                    btnElement.classList.add('quiz-option'); // Reset style
-                    originalContent.innerHTML = originalContent.textContent; // Remove icon
-                    options.forEach(btn => btn.disabled = false); // Re-enable
+                    btnElement.classList.add('quiz-option'); 
+                    originalContent.innerHTML = originalContent.textContent; 
+                    options.forEach(btn => btn.disabled = false); 
                 }, 800);
             }
         };
 
         // --- INIT ---
         window.onload = () => {
-            // Intro Logic
+            // 1 SEC TO OPEN WITH TEXT
             setTimeout(() => {
-                const intro = document.getElementById('dopaem-intro');
-                if(intro) intro.classList.add('hidden-intro');
+                const intro = document.getElementById('intro-overlay');
+                if(intro) intro.remove(); 
                 
-                // Start App after intro
                 router('dashboard');
-            }, 1500);
+            }, 1000); // 1000ms = 1 sec
         };
 
     </script>
